@@ -1,0 +1,26 @@
+STATUS CODES
+
+0 - "Other" (used as FK for random items)
+1001 - Email already in use, cannot create account. ERROR
+1002 - Account created, check email to confirm.
+1003 - Account created, could not email. Please contact us for assistance.
+1004 - Issue when creating account, please contact support. ERROR
+1005 - Account activated (email link clicked). ready to log in.
+1006 - Could not activate account ERROR
+1007 - Could not log in ERROR
+1008 - Email not verified yet, cannot login ERROR
+1009 - Account not yet approved, cannot login ERROR
+1010 - Password change required ERROR
+1011 - Logout successful
+1012 - Could not reset password, user not found or error occured ERROR
+1013 - Setup for reset, but could not send the reset email
+1014 - Password has been updated, ready to log in
+1015 - There was a problem changing password. Link may have expired. Try again or get support. ERROR
+1016 - Welcome, you need to complete your profile before you go further
+1017 - Session expired or invalid. Please re-login ERROR
+1018 - user details updated, ready to go
+1019 - cannot update user details, something went wrong ERROR
+1020 - something went wrong when accepting an email invite ERROR
+1021 - invite sent success
+1022 - something went wrong with invitation process ERROR
+1023 - could not change password of logged in user because current was wrong or new didn't match ERROR
