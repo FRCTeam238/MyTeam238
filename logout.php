@@ -6,7 +6,11 @@ $sql = "DELETE FROM ".TABLE_SESSIONS
     $query = db_query($sql);
     if(!$query){//didnt delete? who cares i guess?
     }
-    $_SESSION['statusCode'] = 1011;
+    
+    if(!isset($_GET['silent'])){ //don't set code if we're doing a silent logout (like email change)
+        $_SESSION['statusCode'] = 1011;
+    }
+    
     $Data = new Data;
     $Data->doLog(1011, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Logout Complete');
     Secure::suspendThisSession();

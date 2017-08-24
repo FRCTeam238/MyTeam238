@@ -20,6 +20,10 @@ class Data {
     function doLogEmailSent($status_code, $user_id, $sent_when, $user_profile_id = NULL){
         $sql1 = "INSERT INTO `".TABLE_LOG_EMAIL."`(`status_id`, `user_id`, `sent`, `user_profile_id`) "
                 . "VALUES (".$status_code.",".$user_id.",'".$sent_when."',".$user_profile_id.");";
+        if($user_profile_id == NULL){
+            $sql1 = substr($sql1, 0, -2);
+            $sql1 .= "NULL);";
+        }
         return db_query($sql1);
     }
     
@@ -261,7 +265,6 @@ class Data {
     }
     
     function doSignBehaviorContract($user_id, $email, $password, $fname, $lname){
-        $returnValue = 0;
         $verify = $this->doAccountLogin($email, $password);
         if($verify->account_found_valid){
             //at this point, the password was valid
@@ -273,7 +276,7 @@ class Data {
                 return db_query($sql1);
             }
         }        
-        return $returnValue;
+        return 0;
     }
     
     function getCurrentlyActiveSeason(){
@@ -334,6 +337,38 @@ class Data {
         else{
             return 0;
         }
+    }
+    
+    function doUpdateEmailAddress($user_id, $email, $password, $new_email, $newverifykey){
+        $verify = $this->doAccountLogin($email, $password);
+        if($verify->account_found_valid){
+            $sql1 = "UPDATE ".TABLE_USERS." u "
+                    . "SET u.email = ".db_input($new_email)." "
+                    . "WHERE u.email = ".db_input($email)." "
+                    . "AND u.id = ".db_input($user_id).";";
+            $result1 = db_query($sql1);
+            $sql2 = "UPDATE ".TABLE_USERDETAILS." ud "
+                    . "SET ud.emailVerified = 0, "
+                    . "ud.emailKey = ".db_input($newverifykey)." "
+                    . "WHERE ud.user_id = ".db_input($user_id).";";
+            $result2 = db_query($sql2);
+            if($result1 && $result2){
+                return 1;
+            }
+        }
+        return 0;
+    }
+    
+    function doDeactivateAccount($user_id, $email, $password){
+        $verify = $this->doAccountLogin($email, $password);
+        if($verify->account_found_valid){
+            $sql1 = "UPDATE ".TABLE_USERDETAILS." ud "
+                    . "SET ud.is_deleted = 1, forcePwChange = 1 "
+                    . "WHERE ud.user_id = ".db_input($user_id)." "
+                    . "LIMIT 1;";
+            return db_query($sql1);
+        }
+        return 0;
     }
     
     /*
