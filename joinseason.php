@@ -3,62 +3,69 @@ require_once 'main.inc.php';
 $Security = new Secure;
 $Security->requireLogin();//lock it down
 
-if($_SESSION['_user']['profile_complete']){//can't be here once profile is done
-    header("Location: index");
-}
+$Data = new Data;
+require(CLASSES_DIR.'registrant_types.php');
 
-if($_POST){//incoming update attempt
-    $Data = new Data;
-    if($_POST['ofage']){
-        $result = $Data->doUpdateUserDetails($_SESSION['_user']['id'], $_POST['fname'], $_POST['lname'], $_POST['dob']);
+if($_POST){//incoming join attempt
+    if($_POST['seasonrole'] != "Select..."){
+        $result = $Data->joinSeason($_SESSION['_user']['id'], $_POST['seasonid'], $_POST['pfname'], $_POST['seasonrole']);
         if($result){
-            $_SESSION['statusCode'] =  1018;
-            $_SESSION['_user']['profile_complete'] = 1;
-            $Data->doLog(1018, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Updated User Details');
+            $_SESSION['statusCode'] =  1024;
+            $Data->doLog(1024, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'User Joined Season as '.$_POST['seasonrole']);
             session_write_close();
             header("Location: index");
         }
         else{
-            $_SESSION['statusCode'] =  1019;
-            $Data->doLog(1019, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Updated User Details');
+            $_SESSION['statusCode'] =  1025;
+            $Data->doLog(1025, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Join User to Season');
         }
     }    
 }
+else{
+    if($Data->userHasProfileInActiveSeason($_SESSION['_user']['id'])){
+        $_SESSION['statusCode'] =  1026;
+        $Data->doLog(1026, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED Attempted Access Join Season Page - Already Complete');
+        session_write_close();
+        header("Location: index");
+    }
+}
+
+$current_season = $Data->getCurrentlyActiveSeason();
 
 $BuildPage = new BuildPage();
-$BuildPage->printHeader('User Detail');
+$BuildPage->printHeader('Join Season');
 ?>
 
-Welcome to <?php echo SITE_SHORTNAME ?>! We see that you're new here, and in order to continue, you must complete 
-your account detail. Your account detail will collect your standard identifying information. It cannot be edited once submitted.<br /><br />
-<div class="alert alert-warning" role="alert"><b>Warning:</b> This account detail is a one-time completion, please check your entries carefully.
-You'll have the opportunity at a later time to specify additional information (such as your "preferred name" or your shirt size). <br /><br />
-<b><em>Enter information on this page exactly as it appears on your government issued identification.</em></b></div>
+<div class="alert alert-danger" role="alert">Please make your selection carefully. This can only be selected one time per season, and is not editable.</div>
 
+<?php echo SITE_FULLNAME; ?> is now registering for the <?php echo $current_season->season_year ?> season (aka <?php echo $current_season->season_name ?>) !
+<br /><Br />
 <div class="col-md-6 col-md-push-3">
-<form action="<?php echo strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))); ?>" method="POST" id="accountdetail" name="accountdetail">
+<form action="<?php echo strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))); ?>" method="POST" id="joinseason" name="joinseason">
     <div class="panel panel-primary">
       <div class="panel-heading">
-        <h3 class="panel-title">Account Detail</h3>
+        <h3 class="panel-title">Season Role</h3>
       </div>
       <div class="panel-body">
         <div class="form-group has-feedback">
-            <label class="control-label" for="fname">Legal First Name</label>
-            <input type="text" name="fname" class="form-control" id="fname" placeholder="Michael" autocomplete="off">                
+            <label class="control-label" for="pfname">Preferred First Name</label><br /><em>This field is optional. If you don't specify a preferred name, we'll simply 
+            use your legal first name as your preferred.</em>
+            <input type="text" name="pfname" class="form-control" id="pfname" placeholder="Mike" autocomplete="off">                
         </div>
         <div class="form-group has-feedback">
-            <label class="control-label" for="lname">Legal Last Name</label>
-            <input type="text" name="lname" class="form-control" id="lname" placeholder="Phelps" autocomplete="off">                
+            <label class="control-label" for="seasonrole">Your Role for <?php echo ($current_season->season_year - 1) ?> - <?php echo $current_season->season_year ?> Season</label><br />
+            <select class="form-control" name="seasonrole" id="seasonrole" onchange="ChangeRole()">
+                <option value="0">Select...</option>
+                <option value="<?php echo RegistrantTypes::Student ?>"><?php echo RegistrantTypes::toString(RegistrantTypes::Student) ?></option>
+                <option value="<?php echo RegistrantTypes::Mentor ?>"><?php echo RegistrantTypes::toString(RegistrantTypes::Mentor) ?></option>
+                <option value="<?php echo RegistrantTypes::Parent ?>"><?php echo RegistrantTypes::toString(RegistrantTypes::Parent) ?></option>
+                <option value="<?php echo RegistrantTypes::Alumni ?>"><?php echo RegistrantTypes::toString(RegistrantTypes::Alumni) ?></option>
+                <option value="Sponsor">Sponsor</option>
+             </select>
         </div>
-        <div class="form-group has-feedback">
-            <label class="control-label" for="dob">Legal Date of Birth</label><br />
-            <input type="date" class="form-control" name="dob" placeholder="Date of Birth"><br />
-            <label>
-                <input type="checkbox" name="ofage"> I am at least 13 years of age<br /><br />
-                <span style="font-style:italic;font-size:11px;">We're not allow to collect information about those under the age of 13.</span>
-            </label>
-        </div>
-        <button type="submit" class="btn btn-primary center-block" name="accountdetail">Finalize Details</button>              
+        <div class="alert alert-info" role="alert" id="roledesc">Select a role...</div>
+        <input type="hidden" value="<?php echo $current_season->season_id ?>" name="seasonid" />
+        <button type="submit" class="btn btn-primary center-block" name="joinseasongo" id="joinseasongo">Begin Registration!</button>              
       </div>
       <br />
     </div>
@@ -66,31 +73,59 @@ You'll have the opportunity at a later time to specify additional information (s
 </div>
 
 <script>
-$(document).ready(function () {
-    $('#accountdetail').validate({
-        rules: {
-            fname: {
-                required: true
-            },
-            lname: {
-                required: true
-            },
-            dob: {
-                required: true,
-                dateISO: true
-            },
-            ofage: {
-                required: true
-            }
-        },
-        highlight: function (element) {
-            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
-        },
-        success: function (element) {
-            element.closest('.form-group').removeClass('has-error').addClass('has-success');
+    $( document ).ready(function() {
+        $("#roledesc").hide();
+        $("#joinseasongo").prop("disabled", true);
+    });
+    $("#joinseason").validate({
+        submitHandler: function(form) {
+          if(document.getElementById("seasonrole").value == 0){
+               alert('Please select a registration type before continuing!'); 
+          }
+          else{
+              var selectedid = document.getElementById("seasonrole").value;
+              var selectedtext = $("#seasonrole option[value='" + selectedid + "']").text();
+                if (confirm('Are you sure you would like to register as a **' + selectedtext + '**?')){
+                    form.submit(); 
+                }
+          }
         }
     });
-});
+    function ChangeRole() {
+        $("#joinseasongo").prop("disabled", false);
+        if(document.getElementById("seasonrole").value == <?php echo RegistrantTypes::Mentor ?>){
+            $("#roledesc").html("We consider \"Mentors\" to be anyone who is post-high school age and assists the team, but <u><b>does not</b> have a student on the team</u>.");
+            if($("#roledesc").is(":visible")){
+                $("#roledesc").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+            }
+            else{
+                $( "#roledesc" ).show("medium");
+            }
+        }
+        else if(document.getElementById("seasonrole").value == <?php echo RegistrantTypes::Parent ?>){
+            $("#roledesc").html("Everyone who has a student on the team is classified as a \"Parent\", <u>even if they additionally participate as a mentor the team</u>.");
+            if($("#roledesc").is(":visible")){
+                $("#roledesc").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+            }
+            else{
+                $( "#roledesc" ).show("medium");
+            }
+        }
+        else if(document.getElementById("seasonrole").value == "Sponsor"){
+            $("#roledesc").html("We appreciate your support! However, there really isn't anything required of Sponsors in this system. If you need assistance, please contact the Team.");
+            $("#joinseasongo").prop("disabled", true);
+            if($("#roledesc").is(":visible")){
+                $("#roledesc").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+            }
+            else{
+                $( "#roledesc" ).show("medium");
+            }
+        }
+        else{
+            $( "#roledesc" ).hide("fast");
+            $("#roledesc").html("Select a role...");
+        }
+    }
 </script>
 
 <?php

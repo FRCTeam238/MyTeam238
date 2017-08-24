@@ -24,3 +24,6 @@ STATUS CODES
 1021 - invite sent success
 1022 - something went wrong with invitation process ERROR
 1023 - could not change password of logged in user because current was wrong or new didn't match ERROR
+1024 - account information updated (GENERAL USE)
+1025 - error when trying to update account information (GENERAL USE)
+1026 - page not available because its already been completed (GENERAL USE)

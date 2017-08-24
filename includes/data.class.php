@@ -260,6 +260,82 @@ class Data {
         return $referred_users;
     }
     
+    function doSignBehaviorContract($user_id, $email, $password, $fname, $lname){
+        $returnValue = 0;
+        $verify = $this->doAccountLogin($email, $password);
+        if($verify->account_found_valid){
+            //at this point, the password was valid
+            $fullname = $this->getUsersNameFromEmail($email);
+            if(strtolower($fullname) == strtolower($fname . " " . $lname)){
+                $sql1 = "UPDATE ".TABLE_PROFILE." UP "
+                . "SET UP.behavior_contract = 1 "
+                . "WHERE UP.user_id = ". db_input($user_id);
+                return db_query($sql1);
+            }
+        }        
+        return $returnValue;
+    }
+    
+    function getCurrentlyActiveSeason(){
+        $sql1 = "SELECT * FROM ".TABLE_SEASONS." s "
+                . "WHERE s.is_active = 1 "
+                . "ORDER BY year DESC "
+                . "LIMIT 1;";
+        require(CLASSES_DIR.'season_info.php');
+        $season_info = new season_info();
+        if(db_num_rows(db_query($sql1))){
+            //season exists
+            $season_hold = db_fetch_row(db_query($sql1));
+            $season_info->season_id = $season_hold[0];
+            $season_info->season_year = $season_hold[1];
+            $season_info->season_name = $season_hold[2];
+            $season_info->season_active = $season_hold[3];
+        }
+        return $season_info;
+    }
+    
+    function userHasProfileInActiveSeason($user_id){
+        $sql1 = "SELECT * FROM ".TABLE_PROFILE." p "
+                . "WHERE p.user_id = ". db_input($user_id)." "
+                . "AND p.season_id = ("
+                    . "SELECT s.id FROM ".TABLE_SEASONS." s "
+                    . "WHERE s.is_active = 1 "
+                    . "ORDER BY s.year DESC "
+                    . "LIMIT 1"
+                . ")";
+        return db_num_rows(db_query($sql1));
+    }
+    
+    function joinSeason($user_id, $season_id, $pref_name, $seasonrole){
+        require_once(CLASSES_DIR.'registrant_types.php');
+        $seasonrole = strtoupper($seasonrole);
+        if(!$this->userHasProfileInActiveSeason($user_id) && $seasonrole != "Sponsor"){
+            $sql1 = "INSERT INTO ".TABLE_PROFILE." (`season_id`, `user_id`, `registration_type`, `preferred_first_name`, `profile_started`) "
+                . "VALUES (". db_input($season_id).", ". db_input($user_id).", ". db_input($seasonrole).",". db_input($pref_name).", '".Format::currentDateTime()."')";
+            if(db_query($sql1)){
+                $sql2 = "SELECT LAST_INSERT_ID();";
+                $result2 = db_query($sql2);
+                $insert_id = db_fetch_row($result2)[0];                
+                if($seasonrole == RegistrantTypes::Mentor || $seasonrole == RegistrantTypes::Parent){
+                    $sql2 = "INSERT INTO ".TABLE_PROFILE_STUDENT." (`user_profile_id`) "
+                            . "VALUES (".$insert_id.")";
+                }
+                else if($seasonrole == RegistrantTypes::Student){
+                    $sql2 = "INSERT INTO ".TABLE_PROFILE_MENTORPARENT." (`user_profile_id`) "
+                            . "VALUES (".$insert_id.")";
+                }
+                else if($seasonrole == RegistrantTypes::Alumni){
+                    $sql2 = "INSERT INTO ".TABLE_PROFILE_ALUMNI." (`user_profile_id`) "
+                            . "VALUES (".$insert_id.")";
+                }
+                return db_query($sql2);
+            }
+        }
+        else{
+            return 0;
+        }
+    }
+    
     /*
     function getPendingInvites(){
 

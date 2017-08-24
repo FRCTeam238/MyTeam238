@@ -93,16 +93,19 @@
     #User and System Settings
     define('TABLE_CONFIG',TABLE_PREFIX.'settings');
     define('TABLE_CODES',TABLE_PREFIX.'status_codes');
+    define('TABLE_LOG_EMAIL',TABLE_PREFIX.'server_email_log');
+    define('TABLE_LOG',TABLE_PREFIX.'server_action_log');
+    
     define('TABLE_SESSIONS',TABLE_PREFIX.'user_sessions');
     define('TABLE_USERS',TABLE_PREFIX.'users');
     define('TABLE_USERDETAILS',TABLE_PREFIX.'user_details');
-    define('TABLE_INVITES',TABLE_PREFIX.'registration_invitations');
-    define('TABLE_LOG_EMAIL',TABLE_PREFIX.'server_email_log');
-    define('TABLE_LOG',TABLE_PREFIX.'server_action_log');
-    #define('TABLE_CONTROL',TABLE_PREFIX.'user_control');
-	
-    #Special Staff Settings
-    #define('TABLE_STAFF_PERM',TABLE_PREFIX.'staff_permissions');
+    
+    define('TABLE_INVITES',TABLE_PREFIX.'registration_invitations');    
+    define('TABLE_SEASONS',TABLE_PREFIX.'seasons');
+    define('TABLE_PROFILE',TABLE_PREFIX.'user_profile');
+    define('TABLE_PROFILE_STUDENT',TABLE_PREFIX.'user_profile_student_specific');
+    define('TABLE_PROFILE_MENTORPARENT',TABLE_PREFIX.'user_profile_mentorparent_specific');
+    define('TABLE_PROFILE_ALUMNI',TABLE_PREFIX.'user_profile_alumni_specific');
     #define('TABLE_STAFF_REPORTS',TABLE_PREFIX.'staff_reports');
 
     #Event Controls
