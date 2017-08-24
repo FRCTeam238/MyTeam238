@@ -69,6 +69,7 @@
     define('SOCIAL_WWW',$_SYS_WWW);
     #System Secret
     define('ADMIN_EMAIL',$_SYS_ADMIN);
+    define('TESTMODE',$_SYS_TESTMODE);
     #System Database
     define('DBHOST',$_SYS_DB_HOST); 
     define('DBNAME',$_SYS_DB_NAME);

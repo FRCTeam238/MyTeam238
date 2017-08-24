@@ -37,6 +37,9 @@
 	#TODO - set during install
 	$_SYS_ADMIN = 'web@frc238.org';
 	
+        #Test Mode?
+        $_SYS_TESTMODE = true;
+        
 	#Mysql Login info
 	#TODO - set during install
 	$_SYS_DB_HOST = 'localhost';

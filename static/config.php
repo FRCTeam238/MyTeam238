@@ -36,6 +36,9 @@
 	#Default admin email. Used only on db connection issues and related alerts.
 	#TODO - set during install
 	$_SYS_ADMIN = 'web@frc238.org';
+        
+        #Test Mode?
+        $_SYS_TESTMODE = true;
 	
 	#Mysql Login info
 	#TODO - set during install
