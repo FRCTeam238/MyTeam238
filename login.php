@@ -37,8 +37,14 @@ if($_POST){//incoming login or account create attempt
                 $Security = new Secure;
                 $_SESSION['_user']['id'] = $login_result->account_id;
                 $_SESSION['_user']['email'] = $login_result->email_address;
-                $_SESSION['_user']['firstname'] = $login_result->first_name;
+                if(!empty($login_result->preferred_first_name)){ //use preferred name if they have one
+                    $_SESSION['_user']['firstname'] = $login_result->preferred_first_name;
+                }
+                else{
+                    $_SESSION['_user']['firstname'] = $login_result->first_name;    
+                }                
                 $_SESSION['_user']['lastname'] = $login_result->last_name;
+                $_SESSION['_user']['reg_type'] = $login_result->registrant_type;
                 $_SESSION['_user']['profile_complete'] = $login_result->profileComplete ? 1 : 0;
                 $_SESSION['_user']['ip'] = $_SERVER['REMOTE_ADDR'];
                 $Security->startNewSession();

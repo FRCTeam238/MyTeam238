@@ -8,11 +8,11 @@ if($_POST){
     $gen = md5(rand());
     $key = substr($gen,strlen($gen) - 10,10);
     $requester_name = $Data->getUsersNameFromEmail($_SESSION['_user']['email']);
-    $insert = $Data->insertInvitation($_POST['to_email'], $_POST['to_fullname'], $_SESSION['_user']['id'], $requester_name, $key);
+    $insert = $Data->insertInvitation($_POST['to_email'], Format::sanitizeName($_POST['to_fullname'], TRUE), $_SESSION['_user']['id'], $requester_name, $key);
     if($insert){ //$insert is the ID of the inserted row
         $Email = new Email;
         //For params: 0 is invite id, 1 is invite key, 2 is users name, 3 is requester
-        $email = $Email->sendEmail($_POST['to_email'], 'reginvite', [$insert, $key, $_POST['to_fullname'], $requester_name]);
+        $email = $Email->sendEmail($_POST['to_email'], 'reginvite', [$insert, $key, Format::sanitizeName($_POST['to_fullname']), $requester_name]);
         if($email){
             $_SESSION['statusCode'] =  1021;
             $Data->doLogEmailSent(1021, $_SESSION['_user']['id'], Format::currentDateTime());

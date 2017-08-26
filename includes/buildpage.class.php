@@ -113,6 +113,11 @@ class BuildPage {
         if(isset($_SESSION['_user'])){
             if(!empty($_SESSION['_user']['firstname'])){
                 $users_fullname = $_SESSION['_user']['firstname'] . " " . $_SESSION['_user']['lastname'];
+                $len = strlen($users_fullname);
+                if($len > 22){
+                    $tosubtract = $len - 23;
+                    $users_fullname = substr($users_fullname, 0, $tosubtract) . "...";
+                }
             }
             else{
                 $users_fullname = "ACCOUNT";
@@ -122,7 +127,8 @@ class BuildPage {
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
-                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                            <!--<span class="glyphicon glyphicon-user" aria-hidden="true"></span>-->
+                            <img src="images/example.jpg" class="img-rounded" alt="Profile Picture" style="margin-top:-8px;" height="26" width="26">
                             '.strtoupper($users_fullname).'
                         </a>
                         <ul class="dropdown-menu">

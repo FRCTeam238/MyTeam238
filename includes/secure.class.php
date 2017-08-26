@@ -95,13 +95,18 @@ class Secure {
         $_SESSION['_user']['tokenExpire'] = time() + 180;
     }
     
-    function requireLogin(){
+    function requireLogin($require_profile_details = TRUE){
         if(!isset($_SESSION['_user'])){
             //user not logged in, send them to login.
             $_SESSION['statusCode'] = 0;
             session_write_close();
             header("Location: ".SITE_URL."login");
             exit;
+        }
+        else if($require_profile_details && !$_SESSION['_user']['profile_complete']){
+            $_SESSION['statusCode'] =  1016;
+            session_write_close();
+            header("Location: details");
         }
         else
         {

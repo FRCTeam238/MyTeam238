@@ -1,7 +1,7 @@
 <?php
 require_once 'main.inc.php';
 $Security = new Secure;
-$Security->requireLogin();//lock it down
+$Security->requireLogin(FALSE);//lock it down
 
 if($_SESSION['_user']['profile_complete']){//can't be here once profile is done
     header("Location: index");
@@ -9,12 +9,17 @@ if($_SESSION['_user']['profile_complete']){//can't be here once profile is done
 
 if($_POST){//incoming update attempt
     $Data = new Data;
-    if($_POST['ofage']){
-        $result = $Data->doUpdateUserDetails($_SESSION['_user']['id'], $_POST['fname'], $_POST['lname'], $_POST['dob']);
+    if($_POST['ofage'] && !empty($_POST['fname']) && !empty($_POST['lname'])){
+        $result = $Data->doUpdateUserDetails($_SESSION['_user']['id'], Format::sanitizeName($_POST['fname']), Format::sanitizeName($_POST['lname']), $_POST['dob']);
         if($result){
             $_SESSION['statusCode'] =  1018;
             $_SESSION['_user']['profile_complete'] = 1;
             $Data->doLog(1018, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Updated User Details');
+            
+            //Set new Session Vars
+            $_SESSION['_user']['firstname'] = Format::sanitizeName($_POST['fname']);
+            $_SESSION['_user']['lastname'] = Format::sanitizeName($_POST['lname']);
+            
             session_write_close();
             header("Location: index");
         }
@@ -70,10 +75,12 @@ $(document).ready(function () {
     $('#accountdetail').validate({
         rules: {
             fname: {
-                required: true
+                required: true,
+                minlength: 3
             },
             lname: {
-                required: true
+                required: true,
+                minlength: 3
             },
             dob: {
                 required: true,

@@ -8,10 +8,18 @@ require(CLASSES_DIR.'registrant_types.php');
 
 if($_POST){//incoming join attempt
     if($_POST['seasonrole'] != "Select..."){
-        $result = $Data->joinSeason($_SESSION['_user']['id'], $_POST['seasonid'], $_POST['pfname'], $_POST['seasonrole']);
+        $result = $Data->joinSeason($_SESSION['_user']['id'], $_POST['seasonid'], Format::sanitizeName($_POST['pfname']), $_POST['seasonrole']);
         if($result){
             $_SESSION['statusCode'] =  1024;
             $Data->doLog(1024, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'User Joined Season as '.$_POST['seasonrole']);
+            
+            //Set new Session Vars
+            if(!empty($_POST['pfname'])){
+                $_SESSION['_user']['firstname'] = Format::sanitizeName($_POST['pfname']);
+            }
+            $_SESSION['_user']['reg_type'] = $_POST['seasonrole'];
+            
+            //Seal and redirect
             session_write_close();
             header("Location: index");
         }
@@ -78,6 +86,12 @@ $BuildPage->printHeader('Join Season');
         $("#joinseasongo").prop("disabled", true);
     });
     $("#joinseason").validate({
+        rules: {
+            pfname: {
+                required: false,
+                minlength: 3
+            },
+        },
         submitHandler: function(form) {
           if(document.getElementById("seasonrole").value == 0){
                alert('Please select a registration type before continuing!'); 

@@ -25,35 +25,10 @@ class Format {
         return $dbOut;
     }
 
-    /*
-    static function getUsersName($id){
-            $name = '';
-            
-            $sql = "SELECT `prefName`, `lastName`"
-                     . " FROM ".TABLE_ACCOUNTS
-                     . " WHERE `KC_ID` = ".db_input($id);
-
-            $row = db_fetch_row(db_query($sql));
-
-            $name = $row[0]." ".$row[1];
-
-            return $name;
+    static function sanitizeName($string, $fullname = FALSE) {//full name skips adding hyphens
+        if(!$fullname){$string = str_replace(' ', '-', $string);} // Replaces all spaces with hyphens.
+        return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
     }
-
-    static function getUsersNameEmail($email){
-            $name = '';
-
-            $sql = "SELECT `prefName`, `lastName`"
-                     . " FROM ".TABLE_ACCOUNTS
-                     . " WHERE `email` = ".db_input($email);
-
-            $row = db_fetch_row(db_query($sql));
-
-            $name = " ".$row[0]." ".$row[1];
-
-            return $name;
-    }
-*/
     
     static function dateTimeSelectIn($in){
         return date("Y-m-d H:i:s",strtotime($in));

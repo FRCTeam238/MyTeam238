@@ -113,6 +113,13 @@ class Data {
             $login_info->dob = $login_holding['dob'];
             $login_info->forcePwChange = $login_holding['forcePwChange'];
             $login_info->isProfileComplete();
+            
+            //Now we want some basic info from their season profile, if they've started it
+            $login_info->preferred_first_name = "";//defaults, only change if they have a profile
+            $login_info->registrant_type = 0;
+            if($this->userHasProfileInActiveSeason($login_holding['user_id'])){
+                
+            }
         }
         else{
             $login_info->account_found_valid = 0;            

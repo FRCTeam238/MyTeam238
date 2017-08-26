@@ -1,7 +1,7 @@
 <?php
 require_once 'main.inc.php';
 $Security = new Secure;
-$Security->requireLogin();//lock it down
+$Security->requireLogin(FALSE);//lock it down
 
 if(!$_SESSION['_user']['profile_complete']){
     $_SESSION['statusCode'] =  1016;

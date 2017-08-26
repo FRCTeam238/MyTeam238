@@ -11,6 +11,8 @@ class login_info{
     
     public $first_name = "";
     public $last_name = "";
+    public $preferred_first_name = "";
+    public $registrant_type = 0;
     public $dob = null;
     
     //called after the other vars are set to determine if the profile is complete
@@ -18,6 +20,8 @@ class login_info{
         if(empty($this->first_name) || empty($this->last_name) || empty($this->dob)|| $this->dob == '0000-00-00'){
             $this->profileComplete = false;
         }
-        $this->profileComplete = true;
+        else{
+            $this->profileComplete = true;
+        }        
     }
 }
