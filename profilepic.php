@@ -3,11 +3,9 @@ require_once 'main.inc.php';
 $Security = new Secure;
 $Security->requireLogin();//lock it down
 
-function MakeThumb($thumb_target = '', $width = 60,$height = 60,$SetFileName = false, $quality = 80)
+function MakeThumb($thumb_target = '', $width = 200,$height = 200,$SetFileName = false, $quality = 75)
 {
     $thumb_img  =   imagecreatefromjpeg($thumb_target);
-
-    // size from
     list($w, $h) = getimagesize($thumb_target);
 
     if($w > $h) {
@@ -23,11 +21,8 @@ function MakeThumb($thumb_target = '', $width = 60,$height = 60,$SetFileName = f
             $crop_y     =   ceil(($h - $w) / 2);
     }
 
-    // I think this is where you are mainly going wrong
     $tmp_img = imagecreatetruecolor($width,$height);
-
     imagecopyresampled($tmp_img, $thumb_img, 0, 0, $crop_x, $crop_y, $new_width, $new_height, $w, $h);
-
     if($SetFileName == false) {
             header('Content-Type: image/jpeg');
             imagejpeg($tmp_img);
@@ -75,7 +70,7 @@ if($_POST){//incoming new photo attempt
         //PNG
         $image = imagecreatefrompng($target_file);
         imagejpeg($image, $target_file_final, 50);
-        imagedestroy($jpgimage);
+        imagedestroy($image);
     }
     else{
         //JPG
@@ -85,7 +80,7 @@ if($_POST){//incoming new photo attempt
     }
     unlink($target_file);//delete the working file
     
-   //$this->MakeThumb($target_file_final,60,60,'image60px.jpg');
+   MakeThumb($target_file_final,200,200,$target_file_final);//convert to 200, the biggest size we really use
     
     //Save file name to DB
     $result = $Data->doSaveUserProfilePicKey($_SESSION['_user']['id'], $img_key);
@@ -104,11 +99,9 @@ if($_POST){//incoming new photo attempt
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Profile Picture');
 $BuildPage->showCode();
-
 ?>
 
 Your profile picture represents you within the <?php echo SITE_SHORTNAME ?> system. This picture can also be viewed by other users through the &quot;Yearbook&quot; feature.<br /><br />
-
 <div>
     <div class="col-md-8">
         The picture you select must:
@@ -118,7 +111,7 @@ Your profile picture represents you within the <?php echo SITE_SHORTNAME ?> syst
             <li>Refrain from showing drug, tobacco, or alcohol use regardless of your age</li>
             <li>Do not upload copyrighted content, unless you have the rights to do so</li>
             <li>When possible, no other people should be visible in the photo</li>
-            <li>File should be 200 x 200 pixels. A preview will be shown before uploading.</li>
+            <li>File should be 200 x 200 pixels, or will be trimmed. A preview will be shown before uploading.</li>
             <li>File should be JPG or PNG extension, 1 MB or less</li>
         </ul>
     </div>
