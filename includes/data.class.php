@@ -27,6 +27,28 @@ class Data {
         return db_query($sql1);
     }
     
+    static function doGetUserProfilePicPath($user_id){
+        $prof_pic_path = SITE_URL.'images/profile/';
+        $sql1 = "SELECT UD.profile_pic_key FROM ".TABLE_USERDETAILS." UD "
+                . "WHERE UD.user_id = ".db_input($user_id)." "
+                . "AND UD.profile_pic_key IS NOT NULL "
+                . "AND UD.is_deleted = 0;";
+        if(db_num_rows(db_query($sql1))){
+            $prof_pic_path .= db_fetch_row(db_query($sql1))[0] . '.jpg';
+        }
+        else{
+            $prof_pic_path .= 'default.jpg';
+        }
+        return $prof_pic_path;
+    }
+    
+    function doSaveUserProfilePicKey($user_id, $pic_key){
+        $sql1 = "UPDATE ".TABLE_USERDETAILS." UD "
+                    . "SET UD.profile_pic_key = ". db_input($pic_key)." "
+                    . "WHERE UD.user_id = ". db_input($user_id);
+        return db_query($sql1);
+    }
+    
     function doCreateAccount($email, $password, $emailKey){
         //User creating a new account
         $now = Format::currentDateTime();

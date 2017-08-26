@@ -128,12 +128,13 @@ class BuildPage {
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
                             <!--<span class="glyphicon glyphicon-user" aria-hidden="true"></span>-->
-                            <img src="images/example.jpg" class="img-rounded" alt="Profile Picture" style="margin-top:-8px;" height="26" width="26">
+                            <img src="'.Data::doGetUserProfilePicPath($_SESSION['_user']['id']).'" class="img-rounded" alt="Profile Picture" style="margin-top:-8px;" height="26" width="26">
                             '.strtoupper($users_fullname).'
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="'.SITE_URL.'email"><span class="glyphicon glyphicon-envelope" aria-hidden="true" style="color:purple;"></span> Change My Email Address</a></li>
-                            <li><a href="'.SITE_URL.'password"><span class="glyphicon glyphicon-asterisk" aria-hidden="true" style="color:purple;"></span> Change My Password</a></li>
+                            <li><a href="'.SITE_URL.'profilepic"><span class="glyphicon glyphicon-user" aria-hidden="true" style="color:purple;"></span> Change My Profile Pic</a></li>
+                            <li><a href="'.SITE_URL.'password"><span class="glyphicon glyphicon-asterisk" aria-hidden="true" style="color:purple;"></span> Change My Password</a></li>                            
                             <li role="separator" class="divider"></li>
                             <li><a href="'.SITE_URL.'logout"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true" style="color:red;"></span> Logout</a></li>
                         </ul>

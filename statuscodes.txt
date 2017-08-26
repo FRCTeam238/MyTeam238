@@ -29,3 +29,4 @@ STATUS CODES
 1026 - page not available because its already been completed (GENERAL USE)
 1027 - email on file updated- check new email and click link to verify before logging back in
 1028 - account deactivated, sorry to see you go!
+1029 - file does not meet requirements. please review.
