@@ -82,6 +82,7 @@ class BuildPage {
                             <li><a href="'.SITE_URL.'details">Details</a></li>
                             <li><a href="'.SITE_URL.'invites">Invites</a></li>
                             <li><a href="'.SITE_URL.'joinseason">Join Season</a></li>
+                            <li><a href="'.SITE_URL.'profile">Season Profile</a></li>
                         </ul>
                     </li>';
             }

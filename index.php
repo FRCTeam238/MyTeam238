@@ -3,7 +3,7 @@ require_once 'main.inc.php';
 $Security = new Secure;
 $Security->requireLogin(FALSE);//lock it down
 
-if(!$_SESSION['_user']['profile_complete']){
+if(!$_SESSION['_user']['detail_complete']){
     $_SESSION['statusCode'] =  1016;
     session_write_close();
     header("Location: details");

@@ -17,7 +17,7 @@ if($_POST){//incoming join attempt
             if(!empty($_POST['pfname'])){
                 $_SESSION['_user']['firstname'] = Format::sanitizeName($_POST['pfname']);
             }
-            $_SESSION['_user']['reg_type'] = $_POST['seasonrole'];
+            $_SESSION['reg_type'] = $_POST['seasonrole'];
             
             //Seal and redirect
             session_write_close();

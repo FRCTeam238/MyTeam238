@@ -113,7 +113,7 @@ class Data {
         return db_num_rows(db_query($sql1));
     }
     
-    function doAccountLogin($email, $password){
+    function doAccountLogin($season_id, $email, $password){
         require(CLASSES_DIR.'login_info.php');
         $login_info = new login_info();        
         $sql1 = "SELECT U.*, UD.* FROM ".TABLE_USERS." U "
@@ -140,7 +140,9 @@ class Data {
             $login_info->preferred_first_name = "";//defaults, only change if they have a profile
             $login_info->registrant_type = 0;
             if($this->userHasProfileInActiveSeason($login_holding['user_id'])){
-                
+                $current_profile = $this->getCurrentSeasonProfile($login_info->account_id, $season_id);
+                $login_info->preferred_first_name = $current_profile->preferred_first_name;
+                $login_info->registrant_type = $current_profile->registration_type;
             }
         }
         else{
@@ -349,11 +351,11 @@ class Data {
                 $result2 = db_query($sql2);
                 $insert_id = db_fetch_row($result2)[0];                
                 if($seasonrole == RegistrantTypes::Mentor || $seasonrole == RegistrantTypes::Parent){
-                    $sql2 = "INSERT INTO ".TABLE_PROFILE_STUDENT." (`user_profile_id`) "
+                    $sql2 = "INSERT INTO ".TABLE_PROFILE_MENTORPARENT." (`user_profile_id`) "
                             . "VALUES (".$insert_id.")";
                 }
                 else if($seasonrole == RegistrantTypes::Student){
-                    $sql2 = "INSERT INTO ".TABLE_PROFILE_MENTORPARENT." (`user_profile_id`) "
+                    $sql2 = "INSERT INTO ".TABLE_PROFILE_STUDENT." (`user_profile_id`) "
                             . "VALUES (".$insert_id.")";
                 }
                 else if($seasonrole == RegistrantTypes::Alumni){
@@ -398,6 +400,47 @@ class Data {
             return db_query($sql1);
         }
         return 0;
+    }
+    
+    function getCurrentSeasonProfile($user_id, $season_id){
+        require(CLASSES_DIR.'season_profile.php');
+        $season_profile = new season_profile();        
+        $sql1 = "SELECT UP.* FROM ".TABLE_PROFILE." UP "
+                . "WHERE UP.season_id = ".db_input($season_id)." "
+                . "AND UP.user_id = ". db_input($user_id).";";
+        if(db_num_rows(db_query($sql1))){
+            $season_holding = db_fetch_array(db_query($sql1));
+            $season_profile->id = $season_holding['id'];
+            $season_profile->registration_type = $season_holding['registration_type'];
+            $season_profile->preferred_first_name = $season_holding['preferred_first_name'];
+            $season_profile->profile_started = $season_holding['profile_started'];
+            $season_profile->behavior_contract = $season_holding['behavior_contract'];
+            $season_profile->cell_phone = $season_holding['cell_phone'];
+            $season_profile->gender = $season_holding['gender'];
+            $season_profile->shirt_size = $season_holding['shirt_size'];
+            $season_profile->address_1 = $season_holding['address_1'];
+            $season_profile->address_2 = $season_holding['address_2'];
+            $season_profile->address_city = $season_holding['address_city'];
+            $season_profile->address_state = $season_holding['address_state'];
+            $season_profile->address_zip = $season_holding['address_zip'];
+            $season_profile->emergency_contact_id = $season_holding['emergency_contact_id'];
+            $season_profile->emergency_contact_user_id = $season_holding['emergency_contact_user_id'];
+            $season_profile->biography = $season_holding['biography'];
+        }
+        else{
+            return 0;         
+        }
+        return $season_profile;
+    }
+    
+    function doUpdateSeasonProfile($user_id, $season_id, $cell, $gender, $shirt, $bio, $addr1, $addr2, $city, $state, $zip){
+        $sql1 = "UPDATE ".TABLE_PROFILE." "
+                . "SET cell_phone = ". db_input($cell).", gender = ". db_input($gender).", shirt_size = ". db_input($shirt).", "
+                . "biography = ". db_input($bio).", address_1 = ". db_input($addr1).", address_2 = ". db_input($addr2).", "
+                . "address_city = ". db_input($city).", address_state = ". db_input($state).", address_zip = ". db_input($zip)." "
+                . "WHERE user_id = ". db_input($user_id)." "
+                . "AND season_id = ". db_input($season_id).";";
+                return db_query($sql1);
     }
     
     /*

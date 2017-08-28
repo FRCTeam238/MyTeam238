@@ -16,8 +16,11 @@ if($_POST){//incoming login or account create attempt
                 setcookie("email", "", -1);//delete cookie
             endif;
         endif;
-
-        $login_result = $Data->doAccountLogin($_POST['email'], $_POST['password']);
+        
+        $currentseason = $Data->getCurrentlyActiveSeason();
+        $_SESSION['current_season_id'] = $currentseason->season_id;
+        
+        $login_result = $Data->doAccountLogin($_SESSION['current_season_id'], $_POST['email'], $_POST['password']);
         if($login_result->account_found_valid){
             //Check Email Verified
             if(!$login_result->emailVerified){
@@ -44,9 +47,10 @@ if($_POST){//incoming login or account create attempt
                     $_SESSION['_user']['firstname'] = $login_result->first_name;    
                 }                
                 $_SESSION['_user']['lastname'] = $login_result->last_name;
-                $_SESSION['_user']['reg_type'] = $login_result->registrant_type;
-                $_SESSION['_user']['profile_complete'] = $login_result->profileComplete ? 1 : 0;
+                $_SESSION['reg_type'] = $login_result->registrant_type;//not under user array!
+                $_SESSION['_user']['detail_complete'] = $login_result->profileComplete ? 1 : 0;
                 $_SESSION['_user']['ip'] = $_SERVER['REMOTE_ADDR'];
+                
                 $Security->startNewSession();
                 $Data->doLog(0, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Login Complete');
                 session_write_close();
@@ -114,7 +118,7 @@ $allowNewAccounts = $Data->allowNewRegistrations();
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Login');
 ?>
-<h2>My Team 238</h2>
+<h2>My Dashboard</h2>
 Welcome to the <?php echo SITE_FULLNAME; ?> Registration and Membership site. Please login to your existing account or create a new one. If you were emailed a registration 
 invitation, please use the personalized link to create your account, as it will expedite the registration process.<br /><br />
 <div class="col-md-6">

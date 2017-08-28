@@ -3,7 +3,7 @@ require_once 'main.inc.php';
 $Security = new Secure;
 $Security->requireLogin(FALSE);//lock it down
 
-if($_SESSION['_user']['profile_complete']){//can't be here once profile is done
+if($_SESSION['_user']['detail_complete']){//can't be here once profile is done
     header("Location: index");
 }
 
@@ -13,7 +13,7 @@ if($_POST){//incoming update attempt
         $result = $Data->doUpdateUserDetails($_SESSION['_user']['id'], Format::sanitizeName($_POST['fname']), Format::sanitizeName($_POST['lname']), $_POST['dob']);
         if($result){
             $_SESSION['statusCode'] =  1018;
-            $_SESSION['_user']['profile_complete'] = 1;
+            $_SESSION['_user']['detail_complete'] = 1;
             $Data->doLog(1018, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Updated User Details');
             
             //Set new Session Vars
