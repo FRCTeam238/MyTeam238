@@ -14,6 +14,9 @@ $BuildPage->printHeader('Home');
 ?>
 
 <h2>My Team 238</h2>
+
+<div class="alert alert-warning" role="alert">THIS IS TEMPORARY CONTENT THAT WILL BE REPLACED!</div>
+
 PAGE CONTENT
 <?php print_r($_SERVER);exit; ?>
 

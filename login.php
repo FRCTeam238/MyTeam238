@@ -7,7 +7,7 @@ if(isset($_SESSION['_user'])){//already logged in. can't be here
 $Data = new Data;
 if($_POST){//incoming login or account create attempt    
     if(isset($_POST['accountlogin'])){
-        if(isset($_SESSION['login_locked_until'])){
+        if(isset($_SESSION['login_locked_until']) && !TESTMODE){
             if(strtotime(Format::currentDateTime()) < $_SESSION['login_locked_until']){
                 //still locked out
                 $_SESSION['statusCode'] =  1032;
