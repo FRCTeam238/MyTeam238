@@ -84,7 +84,8 @@
     require(INCLUDE_DIR.'email.class.php');
     require(INCLUDE_DIR.'secure.class.php');
     #require(INCLUDE_DIR.'staff.class.php');
-    require(INCLUDE_DIR.'data.class.php');
+    require(INCLUDE_DIR.'dataread.class.php');
+    require(INCLUDE_DIR.'data.class.php');    
     require(INCLUDE_DIR.'mysqli.php');
 
     #CURRENT EXECUTING SCRIPT.

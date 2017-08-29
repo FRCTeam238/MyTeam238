@@ -61,7 +61,7 @@ class BuildPage {
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="/2017" title="Home">
+                <a href="index" title="Home">
                     <div class="navbar-brand">
                         <strong>'.SITE_SHORTNAME.'</strong>
                     </div>
@@ -136,6 +136,8 @@ class BuildPage {
                             <li><a href="'.SITE_URL.'email"><span class="glyphicon glyphicon-envelope" aria-hidden="true" style="color:purple;"></span> Change My Email Address</a></li>
                             <li><a href="'.SITE_URL.'profilepic"><span class="glyphicon glyphicon-user" aria-hidden="true" style="color:purple;"></span> Change My Profile Pic</a></li>
                             <li><a href="'.SITE_URL.'password"><span class="glyphicon glyphicon-asterisk" aria-hidden="true" style="color:purple;"></span> Change My Password</a></li>                            
+                            <li role="separator" class="divider"></li>
+                            <li><a href="'.SITE_URL.'help"><span class="glyphicon glyphicon glyphicon-screenshot" aria-hidden="true" style="color:blue;"></span> Help</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="'.SITE_URL.'logout"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true" style="color:red;"></span> Logout</a></li>
                         </ul>

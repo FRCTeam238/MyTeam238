@@ -4,6 +4,8 @@ $Security = new Secure;
 $Security->requireLogin(FALSE);//lock it down
 
 if($_SESSION['_user']['detail_complete']){//can't be here once profile is done
+    $_SESSION['statusCode'] =  1026;
+    session_write_close();
     header("Location: index");
 }
 

@@ -3,13 +3,17 @@ require_once 'main.inc.php';
 $Security = new Secure;
 $Security->requireLogin();//lock it down
 
-if($_POST){//incoming sign attempt
-    $Data = new Data;
+require_once CLASSES_DIR.'registrant_types.php';
+$Data = new Data;
+$readonly = false;
+
+if($_POST){//incoming sign attempt    
     if($_POST['fname'] && $_POST['lname'] && $_POST['currentpassword']){
-        $result = $Data->doSignBehaviorContract($_SESSION['_user']['id'], $_SESSION['_user']['email'], $_POST['currentpassword'], $_POST['fname'], $_POST['lname']);
+        $result = $Data->doSignBehaviorContract($_SESSION['current_season_id'], $_SESSION['_user']['id'], $_SESSION['_user']['email'], $_POST['currentpassword'], $_POST['fname'], $_POST['lname']);
         if($result){
             $_SESSION['statusCode'] =  1024;
             $Data->doLog(1024, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Signed Behavior Contract');
+            $_SESSION['season_signed_behavior'] = true;
             session_write_close();
             header("Location: index");
         }
@@ -19,16 +23,26 @@ if($_POST){//incoming sign attempt
         }
     }    
 }
+else{
+    if(isset($_SESSION['season_signed_behavior']) && $_SESSION['season_signed_behavior']){
+        $readonly = true;
+    }
+}
 
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Behavior Contract');
-?>
 
-<div class="alert alert-warning" role="alert">Please carefully review the following document and apply your digital signature if you agree to its contents.</div>
+if(!$readonly): ?>
+    <div class="alert alert-warning" role="alert">Please carefully review the following document and apply your digital signature if you agree to its contents.</div>
+<?php else: ?>
+    <div class="alert alert-success" role="alert">You've already signed this contract. The contents are available for review below.</div>
+<?php endif; ?>
 
 In order to maintain the best possible experience for all students and mentors of <?php echo SITE_SHORTNAME ?> we maintain a series of minimum 
 standards and requirements that we expect everyone affiliated with the team to maintain to.
 <br /><br />
+
+<?php if($_SESSION['reg_type'] == RegistrantTypes::Student): ?>
 Every member of <?php echo SITE_FULLNAME ?> has a duty and responsibility to represent himself/herself, the team and the school in the best manner possible. 
 Because of the high visibility of all members in the school, when accepting a position on the team, every member must agree to abide by a higher 
 standard of character, values and behavior than an average student. This applies to your behavior both in school and out. You are expected to avoid 
@@ -68,8 +82,14 @@ for questions regarding any recent updates):
 <br /><br />
 By applying your digital signature below, you affirm that you have read this and fully understand the rules set forth on this Contract. You are also stating that you understand 
 that violations of this contract could result in your being dismissed from the team or being suspended from competition at Coach discretion.
-<br /><br />
 
+    <?php elseif($_SESSION['reg_type'] == RegistrantTypes::Mentor): ?>
+    MENTOR CONTRACT
+    <?php elseif($_SESSION['reg_type'] == RegistrantTypes::Parent): ?>
+    PARENT CONTRACT
+    <?php endif; ?>
+<br /><br />
+<?php if(!$readonly): ?>
 <div class="col-md-6 col-md-push-3">
 <form action="<?php echo strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))); ?>" method="POST" id="behaviorcontract" name="behaviorcontract">
     <div class="panel panel-primary">
@@ -95,7 +115,6 @@ that violations of this contract could result in your being dismissed from the t
     </div>
 </form>
 </div>
-
 <script>
 $(document).ready(function () {
     $('#behaviorcontract').validate({
@@ -123,6 +142,9 @@ $(document).ready(function () {
     });
 });
 </script>
+<?php else: ?>
+<a href="index" class="btn btn-info center-block" role="button">Return Home</a><br />
+<?php endif; ?>
 
 <?php
 $BuildPage->printFooter();

@@ -7,61 +7,109 @@ if(isset($_SESSION['_user'])){//already logged in. can't be here
 $Data = new Data;
 if($_POST){//incoming login or account create attempt    
     if(isset($_POST['accountlogin'])){
-        
-        if(isset($_POST['rememberme'])):
-            setcookie("email", $_POST['email'], time()+2592000);//30 day expiration
-        else:
-            //don't want it saved. erase if they have it
-            if(isset($_COOKIE['email'])):
-                setcookie("email", "", -1);//delete cookie
-            endif;
-        endif;
-        
-        $currentseason = $Data->getCurrentlyActiveSeason();
-        $_SESSION['current_season_id'] = $currentseason->season_id;
-        
-        $login_result = $Data->doAccountLogin($_SESSION['current_season_id'], $_POST['email'], $_POST['password']);
-        if($login_result->account_found_valid){
-            //Check Email Verified
-            if(!$login_result->emailVerified){
-                $_SESSION['statusCode'] =  1008;
-            }            
-            //Check Account Approved
-            elseif(!$login_result->account_approved){
-                $_SESSION['statusCode'] =  1009;
-            }            
-            //Check Force PW Required
-            elseif($login_result->forcePwChange){
-                $_SESSION['statusCode'] =  1010;
-                session_write_close();
-                header("Location: password");
+        if(isset($_SESSION['login_locked_until'])){
+            if(strtotime(Format::currentDateTime()) < $_SESSION['login_locked_until']){
+                //still locked out
+                $_SESSION['statusCode'] =  1032;
+                $spamblock = true;
             }
             else{
-                $Security = new Secure;
-                $_SESSION['_user']['id'] = $login_result->account_id;
-                $_SESSION['_user']['email'] = $login_result->email_address;
-                if(!empty($login_result->preferred_first_name)){ //use preferred name if they have one
-                    $_SESSION['_user']['firstname'] = $login_result->preferred_first_name;
+                unset($_SESSION['login_locked_until']);//they can try again now
+            }
+        }        
+        if(isset($_SESSION['last_login_attempt'])){ //we set this flag to catch repeat rapid login attempts
+            $timeFirst  = strtotime($_SESSION['last_login_attempt']);
+            $timeSecond = strtotime(Format::currentDateTime());
+            $differenceInSeconds = $timeSecond - $timeFirst;
+            if($differenceInSeconds < 10){
+                //User is trying too fast. Needs to wait between attempts.
+                $_SESSION['statusCode'] =  1031;
+                $spamblock = true;
+            }
+        }
+        if(!isset($spamblock)){
+            $_SESSION['last_login_attempt'] = Format::currentDateTime();
+            if(isset($_POST['rememberme'])):
+                setcookie("email", $_POST['email'], time()+2592000);//30 day expiration
+            else:
+                //don't want it saved. erase if they have it
+                if(isset($_COOKIE['email'])):
+                    setcookie("email", "", -1);//delete cookie
+                endif;
+            endif;
+
+            $currentseason = $Data->getCurrentlyActiveSeason();
+            $_SESSION['current_season_id'] = $currentseason->season_id;
+
+            $login_result = $Data->doAccountLogin($_SESSION['current_season_id'], $_POST['email'], $_POST['password']);
+            if($login_result->account_found_valid){
+                //Check Email Verified
+                if(!$login_result->emailVerified){
+                    $_SESSION['statusCode'] =  1008;
+                }            
+                //Check Account Approved
+                elseif(!$login_result->account_approved){
+                    $_SESSION['statusCode'] =  1009;
+                }            
+                //Check Force PW Required
+                elseif($login_result->forcePwChange){
+                    $_SESSION['statusCode'] =  1010;
+                    session_write_close();
+                    header("Location: password");
                 }
                 else{
-                    $_SESSION['_user']['firstname'] = $login_result->first_name;    
-                }                
-                $_SESSION['_user']['lastname'] = $login_result->last_name;
-                $_SESSION['reg_type'] = $login_result->registrant_type;//not under user array!
-                $_SESSION['_user']['detail_complete'] = $login_result->profileComplete ? 1 : 0;
-                $_SESSION['_user']['ip'] = $_SERVER['REMOTE_ADDR'];
-                
-                $Security->startNewSession();
-                $Data->doLog(0, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Login Complete');
-                session_write_close();
-                header("Location: index");    
-            }            
-        }
-        else{
-            //Could not Log In
-            $_SESSION['statusCode'] =  1007;
+                    $Security = new Secure;
+                    $_SESSION['_user']['id'] = $login_result->account_id;
+                    $_SESSION['_user']['email'] = $login_result->email_address;
+                    if(!empty($login_result->preferred_first_name)){ //use preferred name if they have one
+                        $_SESSION['_user']['firstname'] = $login_result->preferred_first_name;
+                    }
+                    else{
+                        $_SESSION['_user']['firstname'] = $login_result->first_name;    
+                    }                
+                    $_SESSION['_user']['lastname'] = $login_result->last_name;
+                    $_SESSION['reg_type'] = $login_result->registrant_type;//not under user array!
+                    $_SESSION['_user']['detail_complete'] = $login_result->profileComplete ? 1 : 0;
+                    $_SESSION['_user']['ip'] = $_SERVER['REMOTE_ADDR'];
+
+                    //ADDITIONAL FIELDS THAT NEED TO BE DETERMINED ON LOGIN (default state)
+                    $_SESSION['season_signed_behavior'] = 0;
+                    $_SESSION['season_profile_complete'] = 0;
+
+                    if($Data->userHasProfileInActiveSeason($currentseason->season_id, $_SESSION['_user']['id'])){
+                        $profile = $Data->getCurrentSeasonProfile($_SESSION['_user']['id'], $_SESSION['current_season_id']);
+                        $profile->isProfileComplete();
+                        $_SESSION['season_signed_behavior'] = $profile->behavior_contract;
+                        $_SESSION['season_profile_complete'] = $profile->season_profile_complete;
+                    }
+
+                    $Security->startNewSession();
+                    unset($_SESSION['last_login_attempt']);//delete the tracking of time, since they were successful
+                    unset($_SESSION['login_failures']);
+                    $Data->doLog(0, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Login Complete');
+                    session_write_close();
+                    header("Location: index");    
+                }
+            }
+            else{
+                //Could not Log In
+                $_SESSION['statusCode'] =  1007;
+            }
         }
         $_POST = array();//Clear at end of request
+        //If we reach here, we have a login attempt, but it was not successful. Add to failure count.
+        if(!isset($_SESSION['login_failures'])){
+            $_SESSION['login_failures'] = 1;
+        }
+        elseif(!isset($_SESSION['login_locked_until'])){
+            $_SESSION['login_failures']++;
+        }
+        if($_SESSION['login_failures'] >= 4){
+            //Stop them for a while
+            $_SESSION['statusCode'] =  1032;
+            $_SESSION['login_locked_until'] = strtotime("+15 minutes", strtotime(Format::currentDateTime()));
+            unset($_SESSION['login_failures']);
+        }
     }
     elseif(isset($_POST['accountcreate'])){
         $gen = md5(rand());
@@ -114,7 +162,7 @@ elseif(isset($_GET['activate'])){//account activation
         $_SESSION['statusCode'] =  1006;
     }
 }
-$allowNewAccounts = $Data->allowNewRegistrations();
+$allowNewAccounts = $Data->getSiteSettings()->allow_new_accounts;
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Login');
 ?>
@@ -134,7 +182,7 @@ invitation, please use the personalized link to create your account, as it will 
             </div>
             <div class="form-group has-feedback">
                 <label class="control-label" for="password">Password</label>
-                <input type="password" name="password" class="form-control" id="password">                
+                <input type="password" name="password" class="form-control" id="password" autofocus>                
             </div>
             <div class="checkbox center-block">
                 <label>

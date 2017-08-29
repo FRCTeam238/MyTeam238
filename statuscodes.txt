@@ -31,3 +31,5 @@ STATUS CODES
 1028 - account deactivated, sorry to see you go!
 1029 - file does not meet requirements. please review. (GENERAL USE)
 1030 - page requires a joined season, cannot view yet
+1031 - trying to login too fast. please wait 10 seconds between attempts.
+1032 - spam protection - login locked for 15 minutes (even if you enter the correct password)

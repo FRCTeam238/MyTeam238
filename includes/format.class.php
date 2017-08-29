@@ -34,6 +34,13 @@ class Format {
         return date("Y-m-d H:i:s",strtotime($in));
     }
 
+    static function phoneNumberDisplay($in){
+        $first3 = substr($in, 0, 3);
+        $mid3 = substr($in, 3, 3);
+        $end4 = substr($in, 6);
+        return '(' . $first3 . ') ' . $mid3 . '-' . $end4;
+    }
+    
     static function Filesize($size)
     {
         $units = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');

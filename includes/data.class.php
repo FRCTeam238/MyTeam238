@@ -9,7 +9,7 @@
     See LICENSE.TXT for details and full copyright and contact info.
 
 **********************************************************************/
-class Data {
+class Data extends DataRead {
     
     function doLog($status_code, $user_id, $url, $message){
         $sql1 = "INSERT INTO `".TABLE_LOG."`(`status_id`, `user_id`, `url`, `message`) "
@@ -139,7 +139,7 @@ class Data {
             //Now we want some basic info from their season profile, if they've started it
             $login_info->preferred_first_name = "";//defaults, only change if they have a profile
             $login_info->registrant_type = 0;
-            if($this->userHasProfileInActiveSeason($login_holding['user_id'])){
+            if($this->userHasProfileInActiveSeason($season_id, $login_holding['user_id'])){
                 $current_profile = $this->getCurrentSeasonProfile($login_info->account_id, $season_id);
                 $login_info->preferred_first_name = $current_profile->preferred_first_name;
                 $login_info->registrant_type = $current_profile->registration_type;
@@ -295,8 +295,8 @@ class Data {
         return $referred_users;
     }
     
-    function doSignBehaviorContract($user_id, $email, $password, $fname, $lname){
-        $verify = $this->doAccountLogin($email, $password);
+    function doSignBehaviorContract($season_id, $user_id, $email, $password, $fname, $lname){
+        $verify = $this->doAccountLogin($season_id, $email, $password);
         if($verify->account_found_valid){
             //at this point, the password was valid
             $fullname = $this->getUsersNameFromEmail($email);
@@ -328,22 +328,10 @@ class Data {
         return $season_info;
     }
     
-    function userHasProfileInActiveSeason($user_id){
-        $sql1 = "SELECT * FROM ".TABLE_PROFILE." p "
-                . "WHERE p.user_id = ". db_input($user_id)." "
-                . "AND p.season_id = ("
-                    . "SELECT s.id FROM ".TABLE_SEASONS." s "
-                    . "WHERE s.is_active = 1 "
-                    . "ORDER BY s.year DESC "
-                    . "LIMIT 1"
-                . ")";
-        return db_num_rows(db_query($sql1));
-    }
-    
     function joinSeason($user_id, $season_id, $pref_name, $seasonrole){
         require_once(CLASSES_DIR.'registrant_types.php');
         $seasonrole = strtoupper($seasonrole);
-        if(!$this->userHasProfileInActiveSeason($user_id) && $seasonrole != "Sponsor"){
+        if(!$this->userHasProfileInActiveSeason($season_id, $user_id) && $seasonrole != "Sponsor"){
             $sql1 = "INSERT INTO ".TABLE_PROFILE." (`season_id`, `user_id`, `registration_type`, `preferred_first_name`, `profile_started`) "
                 . "VALUES (". db_input($season_id).", ". db_input($user_id).", ". db_input($seasonrole).",". db_input($pref_name).", '".Format::currentDateTime()."')";
             if(db_query($sql1)){
@@ -403,7 +391,7 @@ class Data {
     }
     
     function getCurrentSeasonProfile($user_id, $season_id){
-        require(CLASSES_DIR.'season_profile.php');
+        require_once(CLASSES_DIR.'season_profile.php');
         $season_profile = new season_profile();        
         $sql1 = "SELECT UP.* FROM ".TABLE_PROFILE." UP "
                 . "WHERE UP.season_id = ".db_input($season_id)." "
@@ -443,127 +431,4 @@ class Data {
                 return db_query($sql1);
     }
     
-    /*
-    function getPendingInvites(){
-
-            $now = Format::currentDateTime();
-            $sql = "SELECT t.createdBy, e.eventName, s.sportName, s.sportGender, ti.key, ti.invitationTime, et.tentNumAssignmentInProgress, e.event_id, t.tent_id "
-                     . "FROM ".TABLE_EVENTS." e, ".TABLE_TENTS." t, ".TABLE_SPORTS." s, ".TABLE_TENTS_INVITATIONS." ti, ".TABLE_EVENTS_TIME." et "
-                     . "WHERE e.event_id = t.event_id "
-                     . "AND t.tent_id = ti.tent_id "
-                     . "AND e.sport_id = s.sport_id "
-                     . "AND et.event_id = e.event_id "
-                     . "AND t.tentOrder = 0 "//tent does not have number assigned
-                     . "AND ti.isActive = 1 "//invitation has not been rejected by creator
-                     . "AND et.tentingEnd > '".$now."' "//cant accept invite if tenting is over
-                     . "AND ti.KC_ID = ".db_input($_SESSION['_user']['KC_ID']).";";
-
-            $query = db_query($sql);
-            $resultArray = array();
-            $html = '';
-            if(db_num_rows($query)){//at least 1 event
-                    while($row = db_fetch_array($query)){
-                            $createdBy = $row['createdBy'];
-                            $eventName = $row['eventName'];
-                            $sport = $row['sportName'];
-                            $sportGender = $row['sportGender'];
-                            $invitationTime = $row['invitationTime'];
-                            $invitationKey = $row['key'];
-                            $distroInProgress = $row['tentNumAssignmentInProgress'];
-                            $eventId = $row['event_id'];
-                            $tentId = $row['tent_id'];
-                            if($sportGender == 'M'){$sportGender = "Men's";}else{$sportGender = "Women's";}
-                            $title = $sportGender . ' ' . $sport . ' :: ' . $eventName;
-                            array_push($resultArray,array("title"=>$title, "createdBy"=>$createdBy, "key"=>$invitationKey, "invitationTime" =>$invitationTime, "distroInProgress"=>$distroInProgress, "eventId"=>$eventId, "tentId"=>$tentId));
-                    }
-
-            //run through each result array. if in a tent for that event, ignore the other invitations	
-                    foreach($resultArray as $key => $value){
-                            $sql = "SELECT tg.tent_id "
-                                     . "FROM ".TABLE_TENTS_GROUPS." tg, ".TABLE_TENTS." t "
-                                     . "WHERE tg.tent_id = t.tent_id "
-                                     . "AND t.event_id = '".$value['eventId']."' "
-                                     . "AND tg.KC_ID = ".db_input($_SESSION['_user']['KC_ID']).";";
-                            if(db_num_rows(db_query($sql))){
-                                    unset($resultArray[$key]);
-                            }
-                    }
-                    //format a response
-                    if(count($resultArray)){
-                            $html = '<hr /><h3>Pending Invitations</h3>
-                            The following invitations are outstanding. Please click the button to accept an invitation.<br />&nbsp;
-                            <table width="875" class="clean center">
-                            <tr><th width="350">Event</th><th width="175">Invited By</th><th width="175">Invited On</th><th width="175">Details</th></tr>
-                            ';
-
-                            $rowNum = 0;
-                            foreach($resultArray as $key => $value){
-                                    $html .= '<tr';
-                                    if($rowNum % 2 == 0){$html .= ' class="alt"';}
-                                    $html .= '><td>'.$value['title'].'</td><td>'.Format::getUsersName($value['createdBy']).'</td><td>'.Format::displayDateTimeFromDB($value['invitationTime']).'</td><td>';
-                                    if(!$value['distroInProgress']){$html .= '<a href="'.SITE_URL.'invitation.php?k='.$value['key'].'"><input type="button" id="submit" value="&nbsp;&nbsp;&nbsp;Accept Invitation" style="width: 170px;" /></a>';}else{$html .= '<span class="error"><i>You cannot accept this invitation right now. Tent order distribution is in progress.</i></span>';}
-                                    $html .= '</td></tr>';
-                                    $rowNum++;
-                            }
-                            $html .= '</table>';
-                    }	
-            }		
-
-            return $html;
-    }
-
-    function getUpcomingEvents(){
-
-            $now = Format::currentDateTime();
-
-            $sql = "SELECT e.event_id, e.eventName, s.sportName, s.sportGender, et.eventStart, et.tentingStart "
-                     . "FROM ".TABLE_EVENTS." e, ".TABLE_EVENTS_TIME." et, ".TABLE_SPORTS." s "
-                     . "WHERE et.event_id = e.event_id "
-                     . "AND e.sport_id = s.sport_id "
-                     . "AND et.showOnlineStart < '".$now."' "
-                     . "AND et.eventStart >= '".$now."' "
-                     . "ORDER BY et.eventStart DESC;";
-
-            $query = db_query($sql);
-            $resultArray = array();
-            if(db_num_rows($query)){//at least 1 event
-                    while($row = db_fetch_array($query)){
-                            $eventID = $row['event_id'];
-                            $eventName = $row['eventName'];
-                            $sport = $row['sportName'];
-                            $sportGender = $row['sportGender'];
-                            $eventStart = $row['eventStart'];
-                            $eventTentStart = $row['tentingStart'];
-                            if($sportGender == 'M'){$sportGender = "Men's";}else{$sportGender = "Women's";}
-                            $title = $sportGender . ' ' . $sport . ' :: ' . $eventName;
-                            $resultArray[$eventID] = array("title"=>$title, "tentStart"=>$eventTentStart, "eventStart"=>$eventStart);
-                    }
-            }
-            $html = '<hr /><h3>Upcoming Tenting Events</h3>';
-            if(!count($resultArray)){
-                    $html .= '<span class="textCenter error">No Upcoming Events</span>';
-                    }
-                    else{
-                            $html .= '
-                            The following events are coming up soon. Click on the details button for full information or to tent for the event, if you are not already.<br />&nbsp;
-                            <table width="875" class="clean center">
-                            <tr><th width="350">Event Title</th><th width="175">Event Begins</th><th width="175">Tenting Begins</th><th width="175">Details</th></tr>
-                            ';
-
-                            $rowNum = 0;
-                            foreach($resultArray as $key => $value){
-                                    $html .= '<tr';
-                                    if($rowNum % 2 == 0){$html .= ' class="alt"';}
-                                    $html .= '><td>'.$value['title'].'</td><td>'.Format::displayDateTimeFromDB($value['eventStart']).'</td><td>'.Format::displayDateTimeFromDB($value['tentStart']).'</td><td><a href="'.SITE_URL.'event.php?e='.$key.'"><input type="button" id="forward" value="View Details" style="width: 170px;" /></a></td></tr>';
-                                    $rowNum++;
-                            }
-
-                            $html .= '</table>';
-                    }
-            $html .= '<br />';
-
-            return $html;
-    }
-     * 
-     */
 }

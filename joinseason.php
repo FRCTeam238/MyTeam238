@@ -30,7 +30,7 @@ if($_POST){//incoming join attempt
     }    
 }
 else{
-    if($Data->userHasProfileInActiveSeason($_SESSION['_user']['id'])){
+    if($Data->userHasProfileInActiveSeason($_SESSION['current_season_id'], $_SESSION['_user']['id'])){
         $_SESSION['statusCode'] =  1026;
         $Data->doLog(1026, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED Attempted Access Join Season Page - Already Complete');
         session_write_close();
