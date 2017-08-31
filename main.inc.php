@@ -79,11 +79,9 @@
 	
     #include required files
     require(INCLUDE_DIR.'buildpage.class.php');
-    #require(INCLUDE_DIR.'buildid.class.php');
     require(INCLUDE_DIR.'format.class.php');
     require(INCLUDE_DIR.'email.class.php');
     require(INCLUDE_DIR.'secure.class.php');
-    #require(INCLUDE_DIR.'staff.class.php');
     require(INCLUDE_DIR.'dataread.class.php');
     require(INCLUDE_DIR.'data.class.php');    
     require(INCLUDE_DIR.'mysqli.php');
@@ -108,7 +106,7 @@
     define('TABLE_PROFILE_STUDENT',TABLE_PREFIX.'user_profile_student_specific');
     define('TABLE_PROFILE_MENTORPARENT',TABLE_PREFIX.'user_profile_mentorparent_specific');
     define('TABLE_PROFILE_ALUMNI',TABLE_PREFIX.'user_profile_alumni_specific');
-    #define('TABLE_STAFF_REPORTS',TABLE_PREFIX.'staff_reports');
+    define('TABLE_RELATIONSHIPS',TABLE_PREFIX.'user_relationships');
 
     #Event Controls
     #define('TABLE_EVENTS',TABLE_PREFIX.'events');

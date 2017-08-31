@@ -431,4 +431,9 @@ class Data extends DataRead {
                 return db_query($sql1);
     }
     
+    function doAddRelationship($user_id, $relation_type, $relation_to){
+        $sql1 = "INSERT INTO ".TABLE_RELATIONSHIPS." (`user_id_from`, `relationship`, `user_id_to`) "
+                . "VALUES (". db_input($user_id).", ". db_input($relation_type).", ". db_input($relation_to).")";
+            return db_query($sql1);
+    }
 }

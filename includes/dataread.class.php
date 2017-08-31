@@ -163,4 +163,49 @@ class DataRead {
         return $season_profile;
     }
     
+    function addRelationship_userSearch($season_id, $search_term){
+        require(CLASSES_DIR.'relationship_search_user.php');
+        //$user_search = new season_profile();
+        
+        if(filter_var($search_term, FILTER_VALIDATE_EMAIL)) { //use email
+            $sql1 = "SELECT * FROM ".TABLE_USERS." U "
+                . "JOIN ".TABLE_USERDETAILS." UD "
+                . "ON U.ID = UD.user_id "
+                . "WHERE U.email = ".db_input($search_term).";";
+        }
+        else { //use last name
+            $sql1 = "SELECT U.* FROM ".TABLE_USERS." U "
+                . "JOIN ".TABLE_USERDETAILS." UD "
+                . "ON U.ID = UD.user_id "
+                . "WHERE UD.last_name LIKE ".db_input($search_term).";";
+        }
+        $returnValue = array();
+        $query = db_query($sql1);
+        if(db_num_rows($query)){
+            while($row = db_fetch_array($query)){
+                $searchuser = new relationship_search_user;
+                $searchuser->user_id = $row['id'];
+                $searchuser->user_firstname = $row['first_name'];
+                $searchuser->user_lastname = $row['last_name'];
+                
+                //Check for Reg Type
+                $sql2 = "SELECT UP.registration_type FROM ".TABLE_PROFILE." UP "
+                . "WHERE UP.season_id = ".db_input($season_id)." "
+                . "AND UP.user_id = ". db_input($row['id']).";";                
+                $searchuser->user_reg_type = db_fetch_array(db_query($sql2));
+                if(empty($searchuser->user_reg_type)){$searchuser->user_reg_type = 0;}
+                array_push($returnValue, $searchuser);
+            }
+        }
+        return $returnValue;
+    }
+    
+    function checkIfRelationshipExists($from_id, $to_id, $require_accepted = FALSE){
+        $sql1 = "SELECT * FROM ".TABLE_RELATIONSHIPS." UR "
+                . "WHERE UR.user_id_from = ".db_input($from_id)." "
+                . "AND UR.user_id_to = ". db_input($to_id);
+                if($require_accepted){$sql .= "AND UR.accepted = 1;";}
+        $sql1 .= ';';
+        return db_num_rows(db_query($sql1));
+    }
 }
