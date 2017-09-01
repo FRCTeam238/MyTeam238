@@ -32,6 +32,28 @@ else if($_POST && isset($_POST['addrelationship'])){//a user to relate to, and t
         $Data->doLog(1034, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Add Relationship, Already Existed');
     }
 }
+else if($_POST && isset($_POST['confirmrelation'])){
+    if($Data->doConfirmRelationship($_POST['user_id_from'], $_POST['user_id_to'])){
+        $_SESSION['statusCode'] =  1035;
+        $Data->doLog(1035, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Relationship Confirmed');
+    }
+    else{
+        $_SESSION['statusCode'] =  1025;
+        $Data->doLog(1025, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Confirm Relationship');
+    }
+}
+else if($_POST && isset($_POST['deleterelation'])){
+    if($Data->doDeleteRelationship($_POST['user_id_from'], $_POST['user_id_to'])){
+        $_SESSION['statusCode'] =  1035;
+        $Data->doLog(1035, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Relationship Deleted');
+    }
+    else{
+        $_SESSION['statusCode'] =  1025;
+        $Data->doLog(1025, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Delete Relationship');
+    }
+}
+
+$all_relations = $Data->getRelationships($_SESSION['_user']['id'], FALSE);
 
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Relationships');
@@ -48,7 +70,41 @@ would need to select &QUOT;accept&QUOT; when a student makes a request to mark t
               <h3 class="panel-title">Existing Relationships</h3>
             </div>
             <div class="panel-body">
-                WIP - need to add ability to accept, delete and view
+                <table class="table">
+                <?php
+                $count = 1;
+                foreach ($all_relations as $relation) {
+                    $buttoncodedelete = '<form action="'.strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))).'" method="POST" id="deleterelation" name="deleterelation">'
+                                    . '<input type="hidden" name="user_id_to" value="'.$relation->to_user_id.'" /><input type="hidden" name="user_id_from" value="'.$relation->from_user_id.'" />'
+                                    . '<button type="submit" class="btn btn-danger center-block" name="deleterelation">Delete Relation</button></form>';
+                    $buttoncodeconfirm = '<form action="'.strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))).'" method="POST" id="confirmrelation" name="confirmrelation">'
+                                    . '<input type="hidden" name="user_id_to" value="'.$relation->to_user_id.'" /><input type="hidden" name="user_id_from" value="'.$relation->from_user_id.'" />'
+                                    . '<button type="submit" class="btn btn-success center-block" name="confirmrelation">Confirm Relation</button></form>';
+                    if($count > 1){echo('<hr />');}
+                    echo('<tr');
+                    if($count % 2 == 0){echo(' bgcolor="#FFFF9E"');}
+                    echo('>');
+                    echo('<td>Relationship From <b>'.$relation->from_first_name.' '.$relation->from_last_name.'</b><br />To <b>'.$relation->to_first_name.' '.$relation->to_last_name.'</b>: ' 
+                            .RelationshipTypes::toString($relation->relation_type).'<br /><br />');
+                    if($relation->accepted){
+                        echo $buttoncodedelete;
+                        
+                    }
+                    elseif($relation->from_user_id != $_SESSION['_user']['id']){ //don't show confirm button if you added the relation
+                        echo $buttoncodeconfirm;
+                        echo $buttoncodedelete;
+                    }
+                    else{
+                        echo '<em>Pending Acceptance By Other User</em>';
+                    }
+                    echo('</td></tr>');
+                    $count++;
+                }
+                if(count($all_relations) == 0){
+                    echo 'No Relationships Found. You can add one to the right.';
+                }
+                ?>
+                </table>
             </div>
         </div>
     </div>
@@ -77,13 +133,17 @@ would need to select &QUOT;accept&QUOT; when a student makes a request to mark t
                         </tr>
                         <?php
                         $counter = 1;
-                            foreach ($search_result as $user) {
+                            foreach ($search_result as $user){
                                 $buttoncode = '<form action="'.strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))).'" method="POST" id="selectuser" name="selectuser">'
                                     . '<input type="hidden" name="userid" value="'.$user->user_id.'" /><input type="hidden" name="usersname" value="'.$user->user_firstname.' '.$user->user_lastname.'" />'
                                         . '<button type="submit" class="btn btn-primary center-block" name="selectuser">Select</button></form>';
                                 echo('<tr');
-                                if($counter % 2 == 0){echo(' bgcolor="#FFFF9E"');$counter++;}
+                                if($counter % 2 == 0){echo(' bgcolor="#FFFF9E"');}
                                 echo('><td>'.$user->user_firstname.' '.$user->user_lastname.'</td><td>'. RegistrantTypes::toString($user->user_reg_type).'</td><td>'.$buttoncode.'</td></tr>');
+                                $counter++;
+                            }
+                            if(count($search_result) == 0){
+                                echo 'No matching users found. Please search with new terms.';
                             }
                         ?>
                     </table>
@@ -156,3 +216,4 @@ $(document).ready(function () {
 
 <?php
 $BuildPage->printFooter();
+unset($_POST);//clear post (can't refresh and resubmit)

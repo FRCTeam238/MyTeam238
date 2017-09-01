@@ -165,19 +165,20 @@ class DataRead {
     
     function addRelationship_userSearch($season_id, $search_term){
         require(CLASSES_DIR.'relationship_search_user.php');
-        //$user_search = new season_profile();
         
         if(filter_var($search_term, FILTER_VALIDATE_EMAIL)) { //use email
             $sql1 = "SELECT * FROM ".TABLE_USERS." U "
                 . "JOIN ".TABLE_USERDETAILS." UD "
                 . "ON U.ID = UD.user_id "
-                . "WHERE U.email = ".db_input($search_term).";";
+                . "WHERE U.email = ".db_input($search_term)." "
+                . "AND UD.is_deleted = 0;";
         }
         else { //use last name
             $sql1 = "SELECT U.* FROM ".TABLE_USERS." U "
                 . "JOIN ".TABLE_USERDETAILS." UD "
                 . "ON U.ID = UD.user_id "
-                . "WHERE UD.last_name LIKE ".db_input($search_term).";";
+                . "WHERE UD.last_name LIKE ".db_input($search_term)." "
+                . "AND UD.is_deleted = 0;";
         }
         $returnValue = array();
         $query = db_query($sql1);
@@ -192,7 +193,7 @@ class DataRead {
                 $sql2 = "SELECT UP.registration_type FROM ".TABLE_PROFILE." UP "
                 . "WHERE UP.season_id = ".db_input($season_id)." "
                 . "AND UP.user_id = ". db_input($row['id']).";";                
-                $searchuser->user_reg_type = db_fetch_array(db_query($sql2));
+                $searchuser->user_reg_type = db_fetch_array(db_query($sql2))['registration_type'];
                 if(empty($searchuser->user_reg_type)){$searchuser->user_reg_type = 0;}
                 array_push($returnValue, $searchuser);
             }
@@ -200,12 +201,51 @@ class DataRead {
         return $returnValue;
     }
     
-    function checkIfRelationshipExists($from_id, $to_id, $require_accepted = FALSE){
+    function checkIfRelationshipExists($user_1, $user_2, $require_accepted = FALSE){ //there are two checks here, because the relation could have been entered in either "direction"
         $sql1 = "SELECT * FROM ".TABLE_RELATIONSHIPS." UR "
-                . "WHERE UR.user_id_from = ".db_input($from_id)." "
-                . "AND UR.user_id_to = ". db_input($to_id);
-                if($require_accepted){$sql .= "AND UR.accepted = 1;";}
-        $sql1 .= ';';
-        return db_num_rows(db_query($sql1));
+                . "WHERE UR.user_id_from = ".db_input($user_1)." "
+                . "AND UR.user_id_to = ". db_input($user_2)." ";
+                if($require_accepted){$sql .= "AND UR.accepted = 1 ";}
+        $sql1 .= 'AND UR.is_deleted = 0;';
+        $sql2 = "SELECT * FROM ".TABLE_RELATIONSHIPS." UR "
+                . "WHERE UR.user_id_from = ".db_input($user_2)." "
+                . "AND UR.user_id_to = ". db_input($user_1)." ";
+                if($require_accepted){$sql .= "AND UR.accepted = 1 ";}
+        $sql2 .= 'AND UR.is_deleted = 0;';
+        return db_num_rows(db_query($sql1)) + db_num_rows(db_query($sql2));
     }
+    
+    function getRelationships($user_id, $accepted_only){
+        require(CLASSES_DIR.'user_relationship.php');
+        
+        $sql1 = "SELECT UD1.user_id AS from_user_id, UD1.first_name AS from_firstname, UD1.last_name AS from_lastname, UD2.user_id AS to_user_id, UD2.first_name AS to_firstname, UD2.last_name AS to_lastname, "
+                . "UR.* FROM ".TABLE_RELATIONSHIPS." UR "
+                . "INNER JOIN ".TABLE_USERDETAILS." UD1 "
+                . "ON UR.user_id_from = UD1.user_id "
+                . "LEFT JOIN ".TABLE_USERDETAILS." UD2 "
+                . "ON UR.user_id_to = UD2.user_id "
+                . "WHERE (UR.user_id_from = ".db_input($user_id)." "
+                . "OR UR.user_id_to = ". db_input($user_id).") "
+                . "AND UR.is_deleted = 0 ";
+            if($accepted_only){ $sql1 .= "AND UR.accepted = 1;";}
+        
+        $returnValue = array();
+        $query = db_query($sql1);
+        if(db_num_rows($query)){
+            while($row = db_fetch_array($query)){
+                $relation = new user_relationship();                                
+                $relation->from_user_id = $row['from_user_id'];
+                $relation->from_first_name = $row['from_firstname'];
+                $relation->from_last_name = $row['from_lastname'];
+                $relation->to_first_name = $row['to_firstname'];
+                $relation->to_last_name = $row['to_lastname'];
+                $relation->to_user_id = $row['to_user_id'];                
+                $relation->relation_type = $row['relationship'];
+                $relation->accepted = $row['accepted'];
+                
+                array_push($returnValue, $relation);
+            }
+        }
+        return $returnValue;
+    }    
 }

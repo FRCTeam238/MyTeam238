@@ -436,4 +436,21 @@ class Data extends DataRead {
                 . "VALUES (". db_input($user_id).", ". db_input($relation_type).", ". db_input($relation_to).")";
             return db_query($sql1);
     }
+    
+    function doConfirmRelationship($user_id_from, $user_id_to){
+        $sql1 = "UPDATE ".TABLE_RELATIONSHIPS." "
+                . "SET accepted = 1 "
+                . "WHERE user_id_from = ". db_input($user_id_from)." "
+                . "AND user_id_to = ". db_input($user_id_to)." "
+                . "AND is_deleted = 0;";
+        return db_query($sql1);
+    }
+    
+    function doDeleteRelationship($user_id_from, $user_id_to){
+        $sql1 = "UPDATE ".TABLE_RELATIONSHIPS." "
+                . "SET is_deleted = 1 "
+                . "WHERE user_id_from = ". db_input($user_id_from)." "
+                . "AND user_id_to = ". db_input($user_id_to).";";
+        return db_query($sql1);
+    }    
 }

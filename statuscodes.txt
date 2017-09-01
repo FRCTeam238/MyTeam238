@@ -35,3 +35,4 @@ STATUS CODES
 1032 - spam protection - login locked for 15 minutes (even if you enter the correct password)
 1033 - relationship added, pending verification by the other party
 1034 - relationship already existed, cannot be added again (may need to be accepted?).
+1035 - relationship updated
