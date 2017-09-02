@@ -57,7 +57,7 @@ configurations can be manipulated using the menu on the upper right, accessed by
                     <td><?php if(!$index_status->join_season){echo '<a href="joinseason" class="btn btn-warning center-block" role="button">Begin</a>';}
                                 else{echo 'Joined As '.RegistrantTypes::toString($_SESSION['reg_type']);} ?></td>
                 </tr>
-                <?php if($index_status->join_season && $_SESSION['reg_type'] != RegistrantTypes::Alumni): ?>
+                <?php if(!$index_status->join_season || ($index_status->join_season && $_SESSION['reg_type'] != RegistrantTypes::Alumni)): ?>
                 <tr>
                     <td>Behavior Contract</td>
                     <td><?php if($index_status->behavior_contract){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Signed';}
@@ -99,7 +99,7 @@ configurations can be manipulated using the menu on the upper right, accessed by
                         ?>
                     </td>
                 </tr>
-                <?php if($index_status->join_season && $_SESSION['reg_type'] != RegistrantTypes::Alumni): ?>
+                <?php if(!$index_status->join_season || ($index_status->join_season && $_SESSION['reg_type'] != RegistrantTypes::Alumni)): ?>
                 <tr>
                     <td>Emergency Contact</td>
                     <td><?php if($index_status->emergency_contact){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Selected';}

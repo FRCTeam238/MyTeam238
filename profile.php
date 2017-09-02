@@ -133,9 +133,6 @@ asked to complete additional profile information specific to your registration t
         <?php endif; ?>
         </div>
     </div>
-    <?php if($readonly): ?>
-    <a href="index" class="btn btn-info center-block" role="button">Return Home</a><br />
-    <?php endif; ?> 
 </div>
 
 <script>

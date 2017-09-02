@@ -1,7 +1,7 @@
 <?php
 require_once 'main.inc.php';
 $Security = new Secure;
-$Security->requireLogin(TRUE);//lock it down
+$Security->requireLogin(TRUE, TRUE);//lock it down
 
 require_once(CLASSES_DIR.'registrant_types.php');
 require_once(CLASSES_DIR.'relationship_types.php');
@@ -99,7 +99,7 @@ contact is already affiliated with us, you can simply search for, and select, th
                             if(count($search_result) == 0){
                                 echo '<tr><td colspan="3">No matching users found. Please search with new terms. '; 
                             }
-                            echo 'Is your contact missing and/or not registered with '.SITE_SHORTNAME.'? You can manually add them instead.</td></tr>';
+                            echo 'Is your contact missing and/or not registered with '.SITE_SHORTNAME.'? You can manually add them instead. Only manually add a contact if you\'re sure they don\'t have an account!</td></tr>';
                         ?>
                     </table>
                     <hr />
@@ -128,9 +128,7 @@ contact is already affiliated with us, you can simply search for, and select, th
                             </div>
                             <div class="form-group has-feedback">
                                 <label class="control-label" for="cellphone">Cell Phone Number</label>
-                                <input type="text" name="cellphone" class="form-control" id="cellphone" placeholder="123-456-7890" autocomplete="off"
-                                    <?php //if($readonly){echo ' value="'.Format::phoneNumberDisplay($season_profile->cell_phone).'" disabled';} ?>
-                                >                
+                                <input type="text" name="cellphone" class="form-control" id="cellphone" placeholder="123-456-7890" autocomplete="off">                
                             </div>
                          </div>
                          <button type="submit" class="btn btn-primary center-block" name="manualcontact">Add Manually</button>
@@ -154,8 +152,6 @@ contact is already affiliated with us, you can simply search for, and select, th
         </div>
     </div>
 </div>
-<br /><br />
-<a href="index" class="btn btn-info " role="button">Return Home</a><br />
 <script>
 $(document).ready(function () {
     $('#addemercontact').validate({

@@ -95,13 +95,6 @@ Each season you will be asked to answer some questions that are specific to your
         </div>
     </div>
 </div>
-    
-<?php if($readonly): ?>
-    <div class="col-md-12">
-    <a href="index" class="btn btn-info" role="button">Return Home</a><br />
-    </div>
-<?php endif; ?> 
-
 <script>
 $(document).ready(function () {
     $('#studentprofile').validate({

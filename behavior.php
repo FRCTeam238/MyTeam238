@@ -1,7 +1,7 @@
 <?php
 require_once 'main.inc.php';
 $Security = new Secure;
-$Security->requireLogin();//lock it down
+$Security->requireLogin(TRUE, TRUE);//lock it down
 
 require_once CLASSES_DIR.'registrant_types.php';
 $Data = new Data;
@@ -83,11 +83,11 @@ for questions regarding any recent updates):
 By applying your digital signature below, you affirm that you have read this and fully understand the rules set forth on this Contract. You are also stating that you understand 
 that violations of this contract could result in your being dismissed from the team or being suspended from competition at Coach discretion.
 
-    <?php elseif($_SESSION['reg_type'] == RegistrantTypes::Mentor): ?>
-    MENTOR CONTRACT
-    <?php elseif($_SESSION['reg_type'] == RegistrantTypes::Parent): ?>
-    PARENT CONTRACT
-    <?php endif; ?>
+<?php elseif($_SESSION['reg_type'] == RegistrantTypes::Mentor): ?>
+    MENTOR CONTRACT TO BE PROVIDED
+<?php elseif($_SESSION['reg_type'] == RegistrantTypes::Parent): ?>
+    PARENT CONTRACT TO BE PROVIDED
+<?php endif; ?>
 <br /><br />
 <?php if(!$readonly): ?>
 <div class="col-md-6 col-md-push-3">
@@ -142,8 +142,6 @@ $(document).ready(function () {
     });
 });
 </script>
-<?php else: ?>
-<a href="index" class="btn btn-info center-block" role="button">Return Home</a><br />
 <?php endif; ?>
 
 <?php

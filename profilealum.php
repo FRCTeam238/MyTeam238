@@ -68,9 +68,6 @@ Each season you will be asked to answer some questions that are specific to your
         <?php endif; ?>
         </div>
     </div>
-    <?php if($readonly): ?>
-    <a href="index" class="btn btn-info center-block" role="button">Return Home</a><br />
-    <?php endif; ?> 
 </div>
 
 <script>
