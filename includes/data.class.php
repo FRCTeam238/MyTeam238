@@ -452,5 +452,30 @@ class Data extends DataRead {
                 . "WHERE user_id_from = ". db_input($user_id_from)." "
                 . "AND user_id_to = ". db_input($user_id_to).";";
         return db_query($sql1);
-    }    
+    }
+
+    function doAddEmergencyContact_ById($user_id, $season_id, $emer_contact_id){
+        $sql1 = "UPDATE ".TABLE_PROFILE." "
+                . "SET emergency_contact_user_id = ".db_input($emer_contact_id).", emergency_contact_id = NULL "
+                . "WHERE user_id = ". db_input($user_id)." "
+                . "AND season_id = ". db_input($season_id).";";
+        return db_query($sql1);
+    }
+    
+    function doAddEmergencyContact_Manual($user_id, $season_id, $fname, $lname, $relation, $phone){
+        $sql1 = "INSERT INTO `".TABLE_EMER_CONTACTS."`(`first_name`, `last_name`, `relationship`, `phone`) "
+                . "VALUES (".db_input($fname).",".db_input($lname).",".db_input($relation).",".db_input($phone).")";
+        db_query($sql1);
+        $insert_id = db_fetch_row(db_query("SELECT LAST_INSERT_ID();"))[0];
+        if($insert_id > 0 && $insert_id != NULL){
+            $sql2 = "UPDATE ".TABLE_PROFILE." "
+                . "SET emergency_contact_id = ".db_input($insert_id).", emergency_contact_user_id = NULL "
+                . "WHERE user_id = ". db_input($user_id)." "
+                . "AND season_id = ". db_input($season_id).";";
+            return db_query($sql2);
+        }
+        else{
+            return 0;
+        }
+    }
 }

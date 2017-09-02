@@ -10,7 +10,7 @@ $show_user_selected = false;
 
 $Data = new Data;
 if($_POST && isset($_POST['usersearch'])){//searching for user
-    $search_result = $Data->addRelationship_userSearch($_SESSION['current_season_id'], $_POST['searchname']);
+    $search_result = $Data->userSearch($_SESSION['current_season_id'], $_SESSION['_user']['id'], $_POST['searchname']);
     $show_search_results = true;
 }
 else if($_POST && isset($_POST['selectuser'])){//a user has been picked from the search
@@ -143,7 +143,7 @@ would need to select &QUOT;accept&QUOT; when a student makes a request to mark t
                                 $counter++;
                             }
                             if(count($search_result) == 0){
-                                echo 'No matching users found. Please search with new terms.';
+                                echo '<tr><td colspan="3">No matching users found. Please search with new terms.</td></tr>';
                             }
                         ?>
                     </table>

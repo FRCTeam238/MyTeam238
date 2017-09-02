@@ -163,14 +163,15 @@ class DataRead {
         return $season_profile;
     }
     
-    function addRelationship_userSearch($season_id, $search_term){
-        require(CLASSES_DIR.'relationship_search_user.php');
+    function userSearch($season_id, $current_user_id, $search_term){
+        require(CLASSES_DIR.'search_user.php');
         
         if(filter_var($search_term, FILTER_VALIDATE_EMAIL)) { //use email
             $sql1 = "SELECT * FROM ".TABLE_USERS." U "
                 . "JOIN ".TABLE_USERDETAILS." UD "
                 . "ON U.ID = UD.user_id "
                 . "WHERE U.email = ".db_input($search_term)." "
+                . "AND UD.user_id != ". db_input($current_user_id)." "
                 . "AND UD.is_deleted = 0;";
         }
         else { //use last name
@@ -178,13 +179,14 @@ class DataRead {
                 . "JOIN ".TABLE_USERDETAILS." UD "
                 . "ON U.ID = UD.user_id "
                 . "WHERE UD.last_name LIKE ".db_input($search_term)." "
+                . "AND UD.user_id != ". db_input($current_user_id)." "
                 . "AND UD.is_deleted = 0;";
         }
         $returnValue = array();
         $query = db_query($sql1);
         if(db_num_rows($query)){
             while($row = db_fetch_array($query)){
-                $searchuser = new relationship_search_user;
+                $searchuser = new search_user;
                 $searchuser->user_id = $row['id'];
                 $searchuser->user_firstname = $row['first_name'];
                 $searchuser->user_lastname = $row['last_name'];
@@ -247,5 +249,25 @@ class DataRead {
             }
         }
         return $returnValue;
-    }    
+    }
+    
+    function getEmergencyContact($user_id, $season_id){
+        $sql1 = "SELECT UD.first_name, UD.last_name FROM ".TABLE_PROFILE." UP "
+                . "JOIN ".TABLE_USERDETAILS." UD "
+                . "ON UP.emergency_contact_user_id = UD.user_id "
+                . "WHERE UP.user_id = ".db_input($user_id)." "
+                . "AND UP.season_id = ". db_input($season_id).";";
+        if(db_num_rows(db_query($sql1))){
+            return db_fetch_row(db_query($sql1));
+        }
+        else{
+            $sql2 = "SELECT EC.first_name, EC.last_name FROM ".TABLE_EMER_CONTACTS." EC "
+                . "JOIN ".TABLE_PROFILE." UP ON EC.id = UP.emergency_contact_id "
+                . "WHERE UP.user_id = ".db_input($user_id)." "
+                . "AND UP.season_id = ". db_input($season_id).";";
+            if(db_num_rows(db_query($sql2))){
+                return db_fetch_row(db_query($sql2));
+            }
+        }
+    }
 }

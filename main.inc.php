@@ -107,6 +107,7 @@
     define('TABLE_PROFILE_MENTORPARENT',TABLE_PREFIX.'user_profile_mentorparent_specific');
     define('TABLE_PROFILE_ALUMNI',TABLE_PREFIX.'user_profile_alumni_specific');
     define('TABLE_RELATIONSHIPS',TABLE_PREFIX.'user_relationships');
+    define('TABLE_EMER_CONTACTS',TABLE_PREFIX.'emergency_contacts');
 
     #Event Controls
     #define('TABLE_EVENTS',TABLE_PREFIX.'events');
