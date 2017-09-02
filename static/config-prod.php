@@ -13,7 +13,7 @@
     #Site URL
 	#The FULL site URL for this product installation, including HTTP or HTTPS to the ROOT of system install
 	#DO INCLUDE THE TRAILING SLASH
-	$_SYS_URL = 'http://localhost/frc238/';
+	$_SYS_URL = 'http://http://staging-my.frc238.org/';
 	
 	#Company Website
 	#Include FULL site, with HTTP or HTTPS, etc
@@ -43,9 +43,9 @@
 	#Mysql Login info
 	#TODO - set during install
 	$_SYS_DB_HOST = 'localhost';
-	$_SYS_DB_NAME = 'frcorg_beta_my238';
-	$_SYS_DB_USER = 'frcorg_beta';
-	$_SYS_DB_PASS = '5wG@qI#0n%';
+	$_SYS_DB_NAME = '';
+	$_SYS_DB_USER = '';
+	$_SYS_DB_PASS = '';
 	
 	#Table prefix
 	#prefix is optional
