@@ -181,7 +181,7 @@ CREATE TABLE `status_codes` (
 --
 
 INSERT INTO `status_codes` (`id`, `isError`, `message`) VALUES
-(1, 0, 'Other'),
+(0, 0, 'Other'),
 (1001, 1, 'Supplied email is already in use, and cannot be used to create an account.'),
 (1002, 0, 'Your account has been created! Please check your email to confirm your address.'),
 (1003, 1, 'Your account has been created, but we weren\'t able to notify you via email. You\'ll need to contact support to verify your account.'),
@@ -199,7 +199,7 @@ INSERT INTO `status_codes` (`id`, `isError`, `message`) VALUES
 (1015, 1, 'There was a problem while attempting to change your password, perhaps the link has expired. Please try again or contact support.'),
 (1016, 0, 'Welcome! Before you continue, we\'ll need you to tell us a little more about you.'),
 (1017, 1, 'The server has detected a problem with your session, and you\'ll need to try logging in again.'),
-(1018, 1, 'User details updated'),
+(1018, 0, 'User details updated'),
 (1019, 1, 'Something went wrong while attempting to update user details, please contact support.'),
 (1020, 1, 'Something has gone wrong while attempting to accept the invitation. Please contact support.'),
 (1021, 0, 'Email invitation has been accepted.'),
@@ -280,7 +280,7 @@ CREATE TABLE `user_details` (
   `registrationIP` varchar(45) NOT NULL,
   `server_stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `is_deleted` tinyint(1) NOT NULL,
-  `profile_pic_key` varchar(10) NOT NULL,
+  `profile_pic_key` varchar(10) DEFAULT NULL,
   `first_name` varchar(40) DEFAULT NULL,
   `last_name` varchar(40) DEFAULT NULL,
   `dob` date NOT NULL,
