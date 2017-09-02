@@ -1,3 +1,4 @@
 static/config-staging.php
 static/config-prod.php
 static/config.php
+static.old/*
