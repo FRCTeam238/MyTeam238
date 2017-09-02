@@ -2,7 +2,7 @@
 /*********************************************************************
     dataread.class.php
 
-    Description: Generates and controls data access
+    Description: Generates and controls data access (read access, no write)
 
     Copyright (c)  2017 Alex Herreid
 
@@ -30,11 +30,12 @@ class DataRead {
         require_once(CLASSES_DIR.'site_settings.php');
         $sql1 = "SELECT * FROM ".TABLE_CONFIG." S "
                 . "LIMIT 1;";
-        $result = db_fetch_row(db_query($sql1));
+        $result = db_fetch_array(db_query($sql1));
         $settings = new site_settings();
-        $settings->allow_new_accounts = $result[0];
-        $settings->announcement = $result[2];
-        $settings->site_email_enabled = $result[1];
+        $settings->allow_new_accounts = $result['allow_new_accounts'];
+        $settings->new_accounts_access_code = $result['new_accounts_access_code'];
+        $settings->site_email_enabled = $result['site_email_enabled'];
+        $settings->announcement = $result['announcement'];
         return $settings;
     }
     

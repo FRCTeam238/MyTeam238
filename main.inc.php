@@ -102,25 +102,13 @@
     
     define('TABLE_INVITES',TABLE_PREFIX.'registration_invitations');    
     define('TABLE_SEASONS',TABLE_PREFIX.'seasons');
+    define('TABLE_RELATIONSHIPS',TABLE_PREFIX.'user_relationships');
+    define('TABLE_EMER_CONTACTS',TABLE_PREFIX.'emergency_contacts');
+    
     define('TABLE_PROFILE',TABLE_PREFIX.'user_profile');
     define('TABLE_PROFILE_STUDENT',TABLE_PREFIX.'user_profile_student_specific');
     define('TABLE_PROFILE_MENTORPARENT',TABLE_PREFIX.'user_profile_mentorparent_specific');
-    define('TABLE_PROFILE_ALUMNI',TABLE_PREFIX.'user_profile_alumni_specific');
-    define('TABLE_RELATIONSHIPS',TABLE_PREFIX.'user_relationships');
-    define('TABLE_EMER_CONTACTS',TABLE_PREFIX.'emergency_contacts');
-
-    #Event Controls
-    #define('TABLE_EVENTS',TABLE_PREFIX.'events');
-    #define('TABLE_EVENTS_TIME',TABLE_PREFIX.'event_timing');
-    #define('TABLE_SPORTS',TABLE_PREFIX.'sports');
-
-    #Tent Controls
-    #define('TABLE_TENTS',TABLE_PREFIX.'tents');
-    #define('TABLE_TENTS_DQ',TABLE_PREFIX.'tents_dq');
-    #define('TABLE_TENTS_CHECKS',TABLE_PREFIX.'tent_checks');
-    #define('TABLE_TENTS_CHECKS_DETAIL',TABLE_PREFIX.'tent_check_detail');
-    #define('TABLE_TENTS_GROUPS',TABLE_PREFIX.'tent_groups');
-    #define('TABLE_TENTS_INVITATIONS',TABLE_PREFIX.'tent_invitations');
+    define('TABLE_PROFILE_ALUMNI',TABLE_PREFIX.'user_profile_alumni_specific');    
 
     #Connect to the DB
     if(!db_connect(DBHOST,DBUSER,DBPASS,DBNAME)){

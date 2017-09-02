@@ -36,3 +36,4 @@ STATUS CODES
 1033 - relationship added, pending verification by the other party
 1034 - relationship already existed, cannot be added again (may need to be accepted?).
 1035 - relationship updated
+1036 - access code is required, and is either missing or incorrect

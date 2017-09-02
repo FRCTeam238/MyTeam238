@@ -5,6 +5,7 @@ if(isset($_SESSION['_user'])){//already logged in. can't be here
     exit;
 }
 $Data = new Data;
+$site_settings = $Data->getSiteSettings();
 if($_POST){//incoming login or account create attempt    
     if(isset($_POST['accountlogin'])){
         if(isset($_SESSION['login_locked_until']) && !TESTMODE){
@@ -112,27 +113,39 @@ if($_POST){//incoming login or account create attempt
         }
     }
     elseif(isset($_POST['accountcreate'])){
-        $gen = md5(rand());
-        $emailKey = substr($gen,strlen($gen) - 12,12);
-        $createresult = $Data->doCreateAccount($_POST['email'], $_POST['password_create'], $emailKey);
-        if($createresult[0]){ //comes back true if we're okay to continue
-            $Email = new Email;
-            //this email takes a parameter of [email key, user id]
-            $sendresult = $Email->sendEmail($_POST['email'], 'createaccount', [$emailKey, $createresult[1]]);
-            $_POST = array();//Clear at end of request
-            if($sendresult){
-                $_SESSION['statusCode'] =  1002;
-                $Data->doLogEmailSent(1002, $createresult[1], Format::currentDateTime());
-                $Data->doLog(1002, $createresult[1], $_SERVER['REQUEST_URI'], 'Account Created');
+        if($site_settings->new_accounts_access_code != NULL){//system is requiring codes
+            if(!isset($_POST['accesscode']) || strtoupper($_POST['accesscode']) != strtoupper($site_settings->new_accounts_access_code)){
+                $_SESSION['statusCode'] =  1036;
+                $skip_processing = true;
             }
             else{
-                $_SESSION['statusCode'] =  1003;
+                $access_code_used = 1;
             }
         }
-        else{
-            //Could not create
-            $_POST = array();//Clear at end of request
-            $_SESSION['statusCode'] =  1004;
+        if(!isset($skip_processing)){
+            $gen = md5(rand());
+            $emailKey = substr($gen,strlen($gen) - 12,12);
+            if(!isset($access_code_used)){$access_code_used = 0;}
+            $createresult = $Data->doCreateAccount($_POST['email'], $_POST['password_create'], $emailKey, $access_code_used);
+            if($createresult[0]){ //comes back true if we're okay to continue
+                $Email = new Email;
+                //this email takes a parameter of [email key, user id]
+                $sendresult = $Email->sendEmail($_POST['email'], 'createaccount', [$emailKey, $createresult[1]]);
+                $_POST = array();//Clear at end of request
+                if($sendresult){
+                    $_SESSION['statusCode'] =  1002;
+                    $Data->doLogEmailSent(1002, $createresult[1], Format::currentDateTime());
+                    $Data->doLog(1002, $createresult[1], $_SERVER['REQUEST_URI'], 'Account Created');
+                }
+                else{
+                    $_SESSION['statusCode'] =  1003;
+                }
+            }
+            else{
+                //Could not create
+                $_POST = array();//Clear at end of request
+                $_SESSION['statusCode'] =  1004;
+            }
         }
     }
 }
@@ -162,7 +175,7 @@ elseif(isset($_GET['activate'])){//account activation
         $_SESSION['statusCode'] =  1006;
     }
 }
-$allowNewAccounts = $Data->getSiteSettings()->allow_new_accounts;
+$allowNewAccounts = $site_settings->allow_new_accounts;
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Login');
 ?>
@@ -194,7 +207,7 @@ invitation, please use the personalized link to create your account, as it will 
           <br />
         </div>
     </form>
-    <a href="forgotPassword" class="btn btn-info center-block" style="max-width: 175px;">Forgot Password?</a>
+    <a href="password" class="btn btn-info center-block" style="max-width: 175px;">Forgot Password?</a>
 </div>
 <?php
     if($allowNewAccounts):
@@ -202,23 +215,29 @@ invitation, please use the personalized link to create your account, as it will 
 <div class="col-md-6">
     <form action="<?php echo strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))); ?>" method="POST" id="accountcreate" name="accountcreate">
         <div class="panel panel-warning">
-          <div class="panel-heading">
-            <h3 class="panel-title">Create Account</h3>
-          </div>
-          <div class="panel-body">
-            <div class="form-group has-feedback">
-                <label class="control-label" for="email">Email</label>
-                <input type="text" name="email" class="form-control" id="email" placeholder="me@example.com" autocomplete="off">                
+            <div class="panel-heading">
+              <h3 class="panel-title">Create Account</h3>
             </div>
-            <div class="form-group has-feedback">
-                <label class="control-label" for="password_create">Password</label>
-                <input type="password" name="password_create" class="form-control" id="password_create">                
-            </div>
-              <div class="form-group has-feedback">
-                <label class="control-label" for="password_create2">Password (confirm)</label>
-                <input type="password" name="password_create2" class="form-control" id="password_create2">                
-            </div>
-          </div>
+            <div class="panel-body">
+                <div class="form-group has-feedback">
+                    <label class="control-label" for="email">Email</label>
+                    <input type="text" name="email" class="form-control" id="email" placeholder="me@example.com" autocomplete="off">                
+                </div>
+                <div class="form-group has-feedback">
+                    <label class="control-label" for="password_create">Password</label>
+                    <input type="password" name="password_create" class="form-control" id="password_create">                
+                </div>
+                  <div class="form-group has-feedback">
+                    <label class="control-label" for="password_create2">Password (confirm)</label>
+                    <input type="password" name="password_create2" class="form-control" id="password_create2">                
+                </div>
+                <?php if($site_settings->new_accounts_access_code): ?>
+                <div class="form-group has-feedback">
+                    <label class="control-label" for="accesscode">Access Code</label>
+                    <input type="text" name="accesscode" class="form-control" id="accesscode" autocomplete="off">                
+                </div>
+                <?php endif; ?>
+            </div>  
             <button type="submit" class="btn btn-warning center-block" name="accountcreate">Create Account</button>
             <br />
         </div>
@@ -256,7 +275,7 @@ $(document).ready(function () {
         },
         messages:{
             email: "Account email address is required",
-            password: "Please enter your password"
+            password: "Please enter your password",
         },
         highlight: function (element) {
             $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
@@ -283,12 +302,16 @@ $(document).ready(function () {
             password_create2: {
                 required: true,
                 equalTo: "#password_create"
-              }
+            },
+            accesscode: {
+                required: true
+            }
         },
         messages:{
             email: "An email address is required to create an account",
             password_create: "Please enter a password",
-            password_create2: "The passwords you entered do not match"
+            password_create2: "The passwords you entered do not match",
+            accesscode: "Current system configuration requires an access code to continue"
         },
         highlight: function (element) {
             $(element).closest('.form-group').removeClass('has-success').addClass('has-error');

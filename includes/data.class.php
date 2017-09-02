@@ -2,7 +2,8 @@
 /*********************************************************************
     data.class.php
 
-    Description: Generates and controls data access
+    Description: Generates and controls data access (write tasks, reading 
+                    only if they need it as a part of the task)
 
     Copyright (c)  2017 Alex Herreid
 
@@ -49,7 +50,7 @@ class Data extends DataRead {
         return db_query($sql1);
     }
     
-    function doCreateAccount($email, $password, $emailKey){
+    function doCreateAccount($email, $password, $emailKey, $access_code_used){
         //User creating a new account
         $now = Format::currentDateTime();
         $sql1 = "SELECT * FROM ".TABLE_USERS." U WHERE U.email = ".db_input($email)."";
@@ -64,7 +65,7 @@ class Data extends DataRead {
         $sql4 = "SELECT LAST_INSERT_ID();";
         $result4 = db_query($sql4);
         $insert_id = db_fetch_row($result4)[0];
-        $sql5 = "INSERT INTO `".TABLE_USERDETAILS."` (user_id, emailKey, createdOn, registrationIP) VALUES (".$insert_id.", '".$emailKey."', '".$now."','".$_SERVER['REMOTE_ADDR']."');";
+        $sql5 = "INSERT INTO `".TABLE_USERDETAILS."` (user_id, emailKey, createdOn, registrationIP, account_approved) VALUES (".$insert_id.", '".$emailKey."', '".$now."','".$_SERVER['REMOTE_ADDR']."', ".$access_code_used.");";
         $result5 = db_query($sql5);
         $sql6 = "COMMIT;";
         $result6 = db_query($sql6);
