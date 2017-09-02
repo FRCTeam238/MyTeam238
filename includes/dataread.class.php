@@ -270,4 +270,29 @@ class DataRead {
             }
         }
     }
+    
+    function getIndexStatus($user_id, $season_id){
+        $returnValue = new index_status();
+        if($this->userHasProfileInActiveSeason($season_id, $user_id)){
+            $returnValue->join_season = 1;
+            $curr_profile = $this->getCurrentSeasonProfile($user_id, $season_id);
+            $curr_profile->isProfileComplete();
+            if($curr_profile->behavior_contract){
+                $returnValue->behavior_contract = 1;
+            }
+            if($curr_profile->emergency_contact_id || $curr_profile->emergency_contact_user_id){
+                $returnValue->emergency_contact = 1;
+            }
+            if($curr_profile->season_profile_complete){
+                $returnValue->season_profile = 1;
+            }
+            
+            //CHECK IF REGISTRANT SPECIFIC IS COMPLETE
+            
+        }
+        
+        $returnValue->percentComplete();//update percentage
+        return $returnValue;
+    }
+    
 }

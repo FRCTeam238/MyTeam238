@@ -74,7 +74,7 @@ class BuildPage {
                 $html .= 
                     '<li class="dropdown hidden-xs" style="background-color:red;">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> TEST MODE
+                            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> TEST MODE <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="'.SITE_URL.'behavior">Behavior</a></li>
@@ -91,7 +91,7 @@ class BuildPage {
             $html .=
                 '
                     <!-- Navigation -->
-                    <li class="dropdown hidden-xs">
+                    <!--<li class="dropdown hidden-xs">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span><span class="hidden-lg">MenuLinkSmallScreen</span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#">Link2</a></li>
@@ -101,7 +101,7 @@ class BuildPage {
                     </li>
                     <li class=" active hidden-sm hidden-md"><a href="#">Link 1</a></li>
                     <li class=" hidden-sm"><a href="#" title="Example Click Link">Link 2</a></li>
-                    <li class=" hidden-sm hidden-md"><a href="#">Link 3</a></li>
+                    <li class=" hidden-sm hidden-md"><a href="#">Link 3</a></li>-->
                 </ul>';
         $html .= $this->doAddIfUserLoggedInNav();
         $html .=
