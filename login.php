@@ -179,7 +179,6 @@ $allowNewAccounts = $site_settings->allow_new_accounts;
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Login');
 ?>
-<h2>My Dashboard</h2>
 Welcome to the <?php echo SITE_FULLNAME; ?> Registration and Membership site. Please login to your existing account or create a new one. If you were emailed a registration 
 invitation, please use the personalized link to create your account, as it will expedite the registration process.<br /><br />
 <div class="col-md-6">

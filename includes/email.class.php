@@ -120,7 +120,7 @@ class Email {
             $content = $this->getMessageContent($to, $type, $paramaters);
             $subject = $content[1];
             $body = $content[0];
-            $headers = $this->getHeaders();print_r($body);exit;
+            $headers = $this->getHeaders();
             //do the send
             $send = mail($to, $subject, $body, $headers);
             if(!$send){
