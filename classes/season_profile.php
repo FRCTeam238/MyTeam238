@@ -22,9 +22,11 @@ class season_profile{
     function isProfileComplete(){
         if(!empty($this->registration_type) && !empty($this->cell_phone) && !empty($this->address_1)){
             $this->season_profile_complete = 1;
+            return 1;
         }
         else{
             $this->season_profile_complete = 0;
+            return 0;
         }
     }
 }

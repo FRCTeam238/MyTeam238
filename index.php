@@ -11,7 +11,8 @@ if(!$_SESSION['_user']['detail_complete']){
 $Data = new Data();
 $current_season = $Data->getCurrentlyActiveSeason();
 require_once(CLASSES_DIR.'index_status.php');
-$index_status = $Data->getIndexStatus($_SESSION['_user']['id'], $_SESSION['current_season_id']);
+require_once(CLASSES_DIR.'registrant_types.php');
+$index_status = $Data->getIndexStatus($_SESSION['_user']['id'], $_SESSION['current_season_id'], $_SESSION['reg_type']);
 
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Home');
@@ -51,12 +52,16 @@ configurations can be manipulated using the menu on the upper right, accessed by
                 </tr>
                 <tr>
                     <td>Join Season</td>
-                    <td><?php if($index_status->join_season){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Joined';}else{echo 'To-Do';} ?></td>
-                    <td><?php if(!$index_status->join_season){echo '<a href="joinseason" class="btn btn-warning center-block" role="button">Begin</a>';}else{echo '---';} ?></td>
+                    <td><?php if($index_status->join_season){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Joined';}
+                                else{echo '<span class="glyphicon glyphicon-record" style="color:red;" aria-hidden="true"></span> To-Do';} ?></td>
+                    <td><?php if(!$index_status->join_season){echo '<a href="joinseason" class="btn btn-warning center-block" role="button">Begin</a>';}
+                                else{echo 'Joined As '.RegistrantTypes::toString($_SESSION['reg_type']);} ?></td>
                 </tr>
+                <?php if($index_status->join_season && $_SESSION['reg_type'] != RegistrantTypes::Alumni): ?>
                 <tr>
                     <td>Behavior Contract</td>
-                    <td><?php if($index_status->behavior_contract){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Signed';}else{echo 'To-Do';} ?></td>
+                    <td><?php if($index_status->behavior_contract){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Signed';}
+                                else{echo '<span class="glyphicon glyphicon-record" style="color:red;" aria-hidden="true"></span> To-Do';} ?></td>
                     <td>
                         <?php
                         if(!$index_status->join_season){
@@ -73,9 +78,11 @@ configurations can be manipulated using the menu on the upper right, accessed by
                         ?>
                     </td>
                 </tr>
+                <?php endif; ?>
                 <tr>
                     <td>Season Profile</td>
-                    <td><?php if($index_status->season_profile){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Completed';}else{echo 'To-Do';} ?></td>
+                    <td><?php if($index_status->season_profile){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Completed';}
+                                else{echo '<span class="glyphicon glyphicon-record" style="color:red;" aria-hidden="true"></span> To-Do';} ?></td>
                     <td>
                         <?php
                         if(!$index_status->join_season){
@@ -92,9 +99,11 @@ configurations can be manipulated using the menu on the upper right, accessed by
                         ?>
                     </td>
                 </tr>
+                <?php if($index_status->join_season && $_SESSION['reg_type'] != RegistrantTypes::Alumni): ?>
                 <tr>
                     <td>Emergency Contact</td>
-                    <td><?php if($index_status->emergency_contact){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Selected';}else{echo 'To-Do';} ?></td>
+                    <td><?php if($index_status->emergency_contact){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Selected';}
+                                else{echo '<span class="glyphicon glyphicon-record" style="color:red;" aria-hidden="true"></span> To-Do';} ?></td>
                     <td>
                         <?php
                         if(!$index_status->join_season){
@@ -111,20 +120,42 @@ configurations can be manipulated using the menu on the upper right, accessed by
                         ?>
                     </td>
                 </tr>
+                <?php endif; ?>
                 <tr>
-                    <td>Registrant Type Specifics</td>
-                    <td><?php if($index_status->registrant_specific){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Completed';}else{echo 'To-Do';} ?></td>
+                    <td><?php if($_SESSION['reg_type'] > 0){echo RegistrantTypes::toString($_SESSION['reg_type']);} ?> Specifics</td>
+                    <td><?php if($index_status->registrant_specific){echo '<span class="glyphicon glyphicon-ok" style="color:green;" aria-hidden="true"></span> Completed';}
+                                else{echo '<span class="glyphicon glyphicon-record" style="color:red;" aria-hidden="true"></span> To-Do';} ?></td>
                     <td>
                         <?php
                         if(!$index_status->join_season){
                             echo 'Not Available Yet';
                         }
                         else{
-                            if(!$index_status->registrant_specific){
-                                echo '<a href="#" class="btn btn-warning center-block" role="button">Begin</a>';
+                            if($_SESSION['reg_type'] > 0){
+                                $page_url_name = "";
+                                $button_text = "";
+                                $button_type = "warning";
+                                if($_SESSION['reg_type'] == RegistrantTypes::Student){
+                                    $page_url_name = "profilestudent";
+                                }
+                                else if($_SESSION['reg_type'] == RegistrantTypes::Mentor || $_SESSION['reg_type'] == RegistrantTypes::Parent){
+                                    $page_url_name = "profileadult";
+                                }
+                                else if($_SESSION['reg_type'] == RegistrantTypes::Alumni){
+                                    $page_url_name = "profilealum";
+                                }
+                                if(!$index_status->registrant_specific){
+                                    $button_text = "Begin";
+                                }
+                                else{
+                                    $button_text = "Review";
+                                    $button_type = "default";
+                                }
+                                
+                                echo '<a href="'.$page_url_name.'" class="btn btn-'.$button_type.' center-block" role="button">'.$button_text.'</a>';
                             }
                             else{
-                                echo '<a href="#" class="btn btn-default center-block" role="button">Review</a>';
+                                echo 'Not Available Yet';
                             }
                         }
                         ?>
@@ -153,7 +184,7 @@ configurations can be manipulated using the menu on the upper right, accessed by
                 <h3 class="panel-title">User Engagement</h3>
             </div>
             <div class="panel-body">
-                <a href="relationships" class="btn btn-default center-block" role="button">Add Relationships</a>
+                <a href="relationships" class="btn btn-default center-block" role="button">Manage Relationships</a>
                 <em>Link Your Child or Parent, required for some site activities</em>
                 <hr />
                 <a href="invites" class="btn btn-default center-block" role="button">Invite Friends to <?php echo SITE_SHORTNAME ?></a>

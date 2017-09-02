@@ -431,6 +431,33 @@ class Data extends DataRead {
                 return db_query($sql1);
     }
     
+    function doUpdateSeasonProfile_Student($user_id, $season_id, $grade, $student_id){
+        $sql1 = "UPDATE ".TABLE_PROFILE_STUDENT." TPS "
+                . "JOIN ".TABLE_PROFILE." TP ON TPS.user_profile_id = TP.id "
+                . "SET TPS.grade_level = ". db_input($grade).", TPS.msd_student_id = ". db_input($student_id)." "
+                . "WHERE TP.user_id = ". db_input($user_id)." "
+                . "AND TP.season_id = ". db_input($season_id).";";
+                return db_query($sql1);
+    }
+    
+    function doUpdateSeasonProfile_Adult($user_id, $season_id, $employer, $profession){
+        $sql1 = "UPDATE ".TABLE_PROFILE_MENTORPARENT." TPA "
+                . "JOIN ".TABLE_PROFILE." TP ON TPA.user_profile_id = TP.id "
+                . "SET TPA.employer = ". db_input($employer).", TPA.profession = ". db_input($profession)." "
+                . "WHERE TP.user_id = ". db_input($user_id)." "
+                . "AND TP.season_id = ". db_input($season_id).";";
+                return db_query($sql1);
+    }
+    
+    function doUpdateSeasonProfile_Alumni($user_id, $season_id, $grad_year){
+        $sql1 = "UPDATE ".TABLE_PROFILE_ALUMNI." TPAL "
+                . "JOIN ".TABLE_PROFILE." TP ON TPAL.user_profile_id = TP.id "
+                . "SET TPAL.graduation_year = ". db_input($grad_year)." "
+                . "WHERE TP.user_id = ". db_input($user_id)." "
+                . "AND TP.season_id = ". db_input($season_id).";";
+                return db_query($sql1);
+    }
+    
     function doAddRelationship($user_id, $relation_type, $relation_to){
         $sql1 = "INSERT INTO ".TABLE_RELATIONSHIPS." (`user_id_from`, `relationship`, `user_id_to`) "
                 . "VALUES (". db_input($user_id).", ". db_input($relation_type).", ". db_input($relation_to).")";

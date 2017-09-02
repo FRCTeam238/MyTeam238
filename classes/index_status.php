@@ -8,12 +8,13 @@ class index_status {
     public $registrant_specific = 0;//the portion of the profile specific to the reg type
     public $percent_complete = 0;
     
-    function percentComplete(){
+    function percentComplete($reg_type){
+        require_once(CLASSES_DIR.'registrant_types.php');        
         $percent_per_item = 20;
         if($this->join_season){$this->percent_complete += $percent_per_item;}
-        if($this->behavior_contract){$this->percent_complete += $percent_per_item;}
+        if($this->behavior_contract || $reg_type == RegistrantTypes::Alumni){$this->percent_complete += $percent_per_item;}
         if($this->season_profile){$this->percent_complete += $percent_per_item;}
-        if($this->emergency_contact){$this->percent_complete += $percent_per_item;}
+        if($this->emergency_contact || $reg_type == RegistrantTypes::Alumni){$this->percent_complete += $percent_per_item;}
         if($this->registrant_specific){$this->percent_complete += $percent_per_item;}
     }
 }

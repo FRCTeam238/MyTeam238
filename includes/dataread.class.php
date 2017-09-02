@@ -271,7 +271,7 @@ class DataRead {
         }
     }
     
-    function getIndexStatus($user_id, $season_id){
+    function getIndexStatus($user_id, $season_id, $reg_type){
         $returnValue = new index_status();
         if($this->userHasProfileInActiveSeason($season_id, $user_id)){
             $returnValue->join_season = 1;
@@ -287,12 +287,83 @@ class DataRead {
                 $returnValue->season_profile = 1;
             }
             
-            //CHECK IF REGISTRANT SPECIFIC IS COMPLETE
-            
+            if($curr_profile->registration_type == RegistrantTypes::Student){
+                $reg_specific = $this->getCurrentSeasonProfile_Student($user_id, $season_id);
+                if($reg_specific){
+                    $returnValue->registrant_specific = $reg_specific->isProfileComplete();
+                }
+            }
+            if($curr_profile->registration_type == RegistrantTypes::Parent || $curr_profile->registration_type == RegistrantTypes::Mentor){
+                $reg_specific = $this->getCurrentSeasonProfile_Adult($user_id, $season_id);
+                if($reg_specific){
+                    $returnValue->registrant_specific = $reg_specific->isProfileComplete();
+                }
+            }
+            if($curr_profile->registration_type == RegistrantTypes::Alumni){
+                $reg_specific = $this->getCurrentSeasonProfile_Alumni($user_id, $season_id);
+                if($reg_specific){
+                    $returnValue->registrant_specific = $reg_specific->isProfileComplete();
+                }
+            }
         }
         
-        $returnValue->percentComplete();//update percentage
+        $returnValue->percentComplete($reg_type);//update percentage
         return $returnValue;
     }
     
+    function getCurrentSeasonProfile_Student($user_id, $season_id){
+        require_once(CLASSES_DIR.'season_profile_student.php');
+        $season_profile_student = new season_profile_student();        
+        $sql1 = "SELECT UPS.* FROM ".TABLE_PROFILE_STUDENT." UPS "
+                . "JOIN ".TABLE_PROFILE." UP ON UPS.user_profile_id = UP.id "
+                . "WHERE UP.season_id = ".db_input($season_id)." "
+                . "AND UP.user_id = ". db_input($user_id).";";
+        if(db_num_rows(db_query($sql1))){
+            $season_holding = db_fetch_array(db_query($sql1));
+            $season_profile_student->grade_level = $season_holding['grade_level'];
+            $season_profile_student->msd_school_id = $season_holding['msd_student_id'];
+            $season_profile_student->permission_slip_signed = $season_holding['permission_slip_signed'];
+            $season_profile_student->permission_slip_signed_who = $season_holding['permission_slip_signed_who'];
+            $season_profile_student->permission_slip_signed_when = $season_holding['permission_slip_signed_when'];
+        }
+        else{
+            return 0;
+        }
+        return $season_profile_student;
+    }
+    
+    function getCurrentSeasonProfile_Adult($user_id, $season_id){
+        require_once(CLASSES_DIR.'season_profile_adult.php');
+        $season_profile_adult = new season_profile_adult();        
+        $sql1 = "SELECT UPA.* FROM ".TABLE_PROFILE_MENTORPARENT." UPA "
+                . "JOIN ".TABLE_PROFILE." UP ON UPA.user_profile_id = UP.id "
+                . "WHERE UP.season_id = ".db_input($season_id)." "
+                . "AND UP.user_id = ". db_input($user_id).";";
+        if(db_num_rows(db_query($sql1))){
+            $season_holding = db_fetch_array(db_query($sql1));
+            $season_profile_adult->employer = $season_holding['employer'];
+            $season_profile_adult->profession = $season_holding['profession'];
+        }
+        else{
+            return 0;
+        }
+        return $season_profile_adult;
+    }
+    
+    function getCurrentSeasonProfile_Alumni($user_id, $season_id){
+        require_once(CLASSES_DIR.'season_profile_alumni.php');
+        $season_profile_alumni = new season_profile_alumni();        
+        $sql1 = "SELECT UPAL.* FROM ".TABLE_PROFILE_ALUMNI." UPAL "
+                . "JOIN ".TABLE_PROFILE." UP ON UPAL.user_profile_id = UP.id "
+                . "WHERE UP.season_id = ".db_input($season_id)." "
+                . "AND UP.user_id = ". db_input($user_id).";";
+        if(db_num_rows(db_query($sql1))){
+            $season_holding = db_fetch_array(db_query($sql1));
+            $season_profile_alumni->graduation_year = $season_holding['graduation_year'];
+        }
+        else{
+            return 0;
+        }
+        return $season_profile_alumni;
+    }
 }

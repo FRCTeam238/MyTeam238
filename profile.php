@@ -4,7 +4,6 @@ $Security = new Secure;
 $Security->requireLogin(TRUE, TRUE);//lock it down
 $readonly = false;
 $Data = new Data;
-$readonly = false;
 
 if($_POST){//incoming profile info attempt    
     $realphone = preg_replace("/[^0-9]/","",$_POST['cellphone']);
@@ -27,8 +26,10 @@ if($_POST){//incoming profile info attempt
     }    
 }
 else{
-    $readonly = true;
     $season_profile = $Data->getCurrentSeasonProfile($_SESSION['_user']['id'], $_SESSION['current_season_id']);
+    if($season_profile->isProfileComplete()){
+        $readonly = true;
+    }
 }
 
 $BuildPage = new BuildPage();
