@@ -243,7 +243,7 @@ class Data extends DataRead {
                 . "AND I.key = ". db_input($invite_key)." "
                 . "AND I.used = 0;";
         $row = db_fetch_row(db_query($sql1));
-        $create = $this->doCreateAccount($row[1], "temppass", "invited");
+        $create = $this->doCreateAccount($row[1], "temppass", "invited", FALSE);
         if($create){
             //Now get the id we just inserted
             $sql2 = "SELECT U.id FROM ".TABLE_USERS." U "
