@@ -20,6 +20,8 @@ else if($_POST && isset($_POST['addemercontact'])){//a user to make emer contact
     if($Data->doAddEmergencyContact_ById($_SESSION['_user']['id'], $_SESSION['current_season_id'], $_POST['contact_id'])){
         $_SESSION['statusCode'] =  1024;
         $Data->doLog(1024, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Emer Contact Added (id)');
+        session_write_close();
+        header("Location: index");
     }
     else{
         $_SESSION['statusCode'] =  1025;
@@ -31,6 +33,8 @@ else if($_POST && isset($_POST['manualcontact'])){
     if($Data->doAddEmergencyContact_Manual($_SESSION['_user']['id'], $_SESSION['current_season_id'], $_POST['fname'], $_POST['lname'], $_POST['relationtype'], $realphone)){
         $_SESSION['statusCode'] =  1024;
         $Data->doLog(1024, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Emer Contact Added (manual)');
+        session_write_close();
+        header("Location: index");
     }
     else{
         $_SESSION['statusCode'] =  1025;
