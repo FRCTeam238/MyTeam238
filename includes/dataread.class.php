@@ -176,7 +176,7 @@ class DataRead {
                 . "AND UD.is_deleted = 0;";
         }
         else { //use last name
-            $sql1 = "SELECT U.* FROM ".TABLE_USERS." U "
+            $sql1 = "SELECT * FROM ".TABLE_USERS." U "
                 . "JOIN ".TABLE_USERDETAILS." UD "
                 . "ON U.ID = UD.user_id "
                 . "WHERE UD.last_name LIKE ".db_input($search_term)." "
