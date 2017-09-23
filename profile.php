@@ -103,7 +103,7 @@ asked to complete additional profile information specific to your registration t
                 </div>
                 <div class="form-group has-feedback">
                     <label class="control-label" for="shirt">Shirt Size</label><br />
-                    <span id="shirtwarning"><em>This shirt size (2XL+) may incur additional fees per product ordered or provided.</em></span>
+                    <span id="shirtwarning"><em>This shirt size (2XL/3XL) may incur additional fees per product ordered or provided.</em></span>
                     <select class="form-control" name="shirt" id="shirt" onchange="ChangeSize()"
                         <?php if($readonly){echo ' disabled';} ?>
                     >
@@ -114,7 +114,7 @@ asked to complete additional profile information specific to your registration t
                         <option value="2XL" <?php if($season_profile->shirt_size == "2XL"){echo ' selected';} ?>>2X-Large</option>
                         <option value="3XL" <?php if($season_profile->shirt_size == "3XL"){echo ' selected';} ?>>3X-Large</option>
                     </select>
-                </div>        
+                </div>
                 <div class="form-group has-feedback">
                     <label class="control-label" for="bio">Biography</label><br /><em>Your biography is used on the &quot;Yearbook&quot; page.
                         <span id="bio_morebutton"><a href="#" onclick="showbiomore()">(more)</a></span> <span id="bio_more">It shows alongside your profile picture, to help 
@@ -149,11 +149,15 @@ function showbiomore(){
     $("#bio_morebutton").hide();
 }
 function ChangeSize() {
-    if(document.getElementById("shirt").value == "2XL" || document.getElementById("shirt").value == "3XL"){
-        $( "#shirtwarning" ).show("medium");
+    //alert(document.getElementById("shirt").value);
+    $("#shirtwarning" ).hide("fast");
+    
+    if(document.getElementById("shirt").value === "S" || document.getElementById("shirt").value === "M" || 
+        document.getElementById("shirt").value === "L" || document.getElementById("shirt").value === "XL"){
+    $( "#shirtwarning" ).hide("medium");
     }
     else{
-        $( "#shirtwarning" ).hide("medium");
+        $( "#shirtwarning" ).show("medium");
     }
 }
 $(document).ready(function () {
