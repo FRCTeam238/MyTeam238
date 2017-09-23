@@ -69,7 +69,7 @@ class BuildPage {
             </div>
             <div id="navbar-collapse" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="'.SITE_URL.'" title="Home"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a></li>';
+                    <li><a href="'.SITE_URL.'" title="Home"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>&nbsp;&nbsp;Home</a></li>';
             if(TESTMODE){//in test mode, make a big menu of pages for dev use
                 $html .= 
                     '<li class="dropdown hidden-xs" style="background-color:red;">

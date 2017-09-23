@@ -11,7 +11,9 @@ if($_SESSION['_user']['detail_complete']){//can't be here once profile is done
 
 if($_POST){//incoming update attempt
     $Data = new Data;
-    if($_POST['ofage'] && !empty($_POST['fname']) && !empty($_POST['lname'])){
+    //Make sure they're 13yrs +
+    $age = date_diff(date_create($_POST['dob']), date_create('today'))->y;
+    if($age >= 13 && !empty($_POST['fname']) && !empty($_POST['lname'])){
         $result = $Data->doUpdateUserDetails($_SESSION['_user']['id'], Format::sanitizeName($_POST['fname']), Format::sanitizeName($_POST['lname']), $_POST['dob']);
         if($result){
             $_SESSION['statusCode'] =  1018;
@@ -29,7 +31,12 @@ if($_POST){//incoming update attempt
             $_SESSION['statusCode'] =  1019;
             $Data->doLog(1019, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Updated User Details');
         }
-    }    
+    }
+    else{
+        //not of age or missing data
+        $_SESSION['statusCode'] =  1037;
+        $Data->doLog(1037, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Set Details, Not of Age');
+    }
 }
 
 $BuildPage = new BuildPage();
@@ -58,12 +65,12 @@ You'll have the opportunity at a later time to specify additional information (s
             <input type="text" name="lname" class="form-control" id="lname" placeholder="Phelps" autocomplete="off">                
         </div>
         <div class="form-group has-feedback">
+            
             <label class="control-label" for="dob">Legal Date of Birth</label><br />
             <input type="date" class="form-control" name="dob" placeholder="Date of Birth"><br />
-            <label>
-                <input type="checkbox" name="ofage"> I am at least 13 years of age<br /><br />
-                <span style="font-style:italic;font-size:11px;">We're not allow to collect information about those under the age of 13.</span>
-            </label>
+            <div class="alert alert-warning" role="alert">We use this information to verify your age. Unless you are a student, your 
+                Date of Birth will not be visible to anyone on the <?php echo SITE_SHORTNAME ?> Registration System, or any Team Coaches/Administrators.
+                We're not allow to collect information about those under the age of 13.</div>
         </div>
         <button type="submit" class="btn btn-primary center-block" name="accountdetail">Finalize Details</button>              
       </div>
@@ -87,9 +94,6 @@ $(document).ready(function () {
             dob: {
                 required: true,
                 dateISO: true
-            },
-            ofage: {
-                required: true
             }
         },
         highlight: function (element) {
