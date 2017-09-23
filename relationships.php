@@ -21,6 +21,12 @@ else if($_POST && isset($_POST['addrelationship'])){//a user to relate to, and t
         if($Data->doAddRelationship($_SESSION['_user']['id'], $_POST['relationtype'], $_POST['relationto_id'])){
             $_SESSION['statusCode'] =  1033;
             $Data->doLog(1033, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'Relationship Added');
+            //try to send the heads up email (to the other party)
+            $to = $Data->getUsersEmailFromId($_POST['relationto_id']);
+            $to_name = $Data->getUsersNameFromEmail($to);
+            $Email = new Email;
+            $currentname = $_SESSION['_user']['firstname'] . " " . $_SESSION['_user']['lastname'];
+            $sendresult = $Email->sendEmail($to, 'relationship', [$to_name, $currentname]);
         }
         else{
             $_SESSION['statusCode'] =  1025;
@@ -184,7 +190,7 @@ would need to select &QUOT;accept&QUOT; when a student makes a request to mark t
     </div>
 </div>
 <br /><br />
-<a href="index" class="btn btn-info " role="button">Return Home</a><br />
+<a href="index" class="btn btn-warning " role="button">Go to My Account</a><br />
 <script>
 
 function TypeChanged(){

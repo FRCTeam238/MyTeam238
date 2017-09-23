@@ -35,18 +35,29 @@ class Email {
                     . 'without the link below. To continue with the password reset request, click the button below or copy the full '
                     . 'link into your favorite browser.<br /><br /><a href="'.$link.'" target="_blank"><img src="'.SITE_URL.'images/email/resetpassword.jpg" alt="Reset" /></a>'
                     . '<br /><br /><a href="'.$link.'">'.$link.'</a>';
-            $subject = SITE_SHORTNAME.' Account Password Reset';
+            $subject = ' Account Password Reset';
             $subject = $this->makeSubject($subject);
             $content = $this->buildMessage($to, $content);
         }
         elseif($type == 'reginvite'){
             $link = SITE_URL.'login?activate&invitation&id='.$paramaters[0].'&key='.$paramaters[1];//0 is invite id, 1 is invite key, 2 is users name, 3 is requester
-            $content = 'Hey there '.$paramaters[2].'- we heard you were interested in joining us here on '.SITE_SHORTNAME.'! In fact, '.$paramaters[3].' '
+            $content = 'Hey there - we heard you were interested in joining us here on '.SITE_SHORTNAME.'! In fact, '.$paramaters[3].' '
                     . 'has sent you an invitation to expedite your registration process. If you are no longer interested in joining us, you can safely ignore this message '
                     . 'and you won\'t receive further messages from us. <b>To accept this invitation, please click the button below or copy the address into your favorite '
                     . ' browser.</b>s<br /><br /><a href="'.$link.'" target="_blank"><img src="'.SITE_URL.'images/email/verifyemail.jpg" alt="Verify" /></a>'
                     . '<br /><br /><a href="'.$link.'">'.$link.'</a>';
-            $subject = SITE_SHORTNAME.' Invitation to Join';
+            $subject = ' Invitation to Join';
+            $subject = $this->makeSubject($subject);
+            $content = $this->buildMessage($to, $content);
+        }
+        elseif($type == 'relationship'){
+            $link = SITE_URL.'relationships';//0 name to, 1 is name from
+            $content = 'We here at '.SITE_SHORTNAME.' wanted to give you a heads up that '.$paramaters[1].' '
+                    . 'has used the relationships tool to associate your accounts. You\'ll need to log in to confirm this before the transaction can go through. '
+                    . 'Please click the button below or copy the address into your favorite '
+                    . ' browser.</b><br /><br /><a href="'.$link.'" target="_blank"><img src="'.SITE_URL.'images/email/account.jpg" alt="Visit Us" /></a>'
+                    . '<br /><br /><a href="'.$link.'">'.$link.'</a>';
+            $subject = ' Relationship Added';
             $subject = $this->makeSubject($subject);
             $content = $this->buildMessage($to, $content);
         }

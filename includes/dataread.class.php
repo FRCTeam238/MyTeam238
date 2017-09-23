@@ -94,6 +94,14 @@ class DataRead {
         return $name;
     }
     
+    static function getUsersEmailFromId($user_id){
+        $sql = "SELECT `email` "
+                 . " FROM ".TABLE_USERS." U "
+                 . " WHERE U.id = ".db_input($user_id);
+        $row = db_fetch_row(db_query($sql));
+        return $row[0];
+    }
+    
     function referredUsers($referred_by_id){
         $sql1 = "SELECT * FROM ".TABLE_INVITES." I "
                 . "WHERE I.requester_user_id = ". db_input($referred_by_id)." "
