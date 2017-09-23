@@ -190,7 +190,6 @@ would need to select &QUOT;accept&QUOT; when a student makes a request to mark t
     </div>
 </div>
 <br /><br />
-<a href="index" class="btn btn-warning " role="button">Go to My Account</a><br />
 <script>
 
 function TypeChanged(){
