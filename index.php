@@ -93,7 +93,7 @@ configurations can be manipulated using the menu on the upper right, accessed by
                                 echo '<a href="profile" class="btn btn-warning center-block" role="button">Begin</a>';
                             }
                             else{
-                                echo '<a href="profile" class="btn btn-default center-block" role="button">Review</a>';
+                                echo '<a href="profile" class="btn btn-default center-block" role="button">Review / Edit</a>';
                             }
                         }
                         ?>

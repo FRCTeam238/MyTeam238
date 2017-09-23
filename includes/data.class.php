@@ -391,42 +391,11 @@ class Data extends DataRead {
         return 0;
     }
     
-    function getCurrentSeasonProfile($user_id, $season_id){
-        require_once(CLASSES_DIR.'season_profile.php');
-        $season_profile = new season_profile();        
-        $sql1 = "SELECT UP.* FROM ".TABLE_PROFILE." UP "
-                . "WHERE UP.season_id = ".db_input($season_id)." "
-                . "AND UP.user_id = ". db_input($user_id).";";
-        if(db_num_rows(db_query($sql1))){
-            $season_holding = db_fetch_array(db_query($sql1));
-            $season_profile->id = $season_holding['id'];
-            $season_profile->registration_type = $season_holding['registration_type'];
-            $season_profile->preferred_first_name = $season_holding['preferred_first_name'];
-            $season_profile->profile_started = $season_holding['profile_started'];
-            $season_profile->behavior_contract = $season_holding['behavior_contract'];
-            $season_profile->cell_phone = $season_holding['cell_phone'];
-            $season_profile->gender = $season_holding['gender'];
-            $season_profile->shirt_size = $season_holding['shirt_size'];
-            $season_profile->address_1 = $season_holding['address_1'];
-            $season_profile->address_2 = $season_holding['address_2'];
-            $season_profile->address_city = $season_holding['address_city'];
-            $season_profile->address_state = $season_holding['address_state'];
-            $season_profile->address_zip = $season_holding['address_zip'];
-            $season_profile->emergency_contact_id = $season_holding['emergency_contact_id'];
-            $season_profile->emergency_contact_user_id = $season_holding['emergency_contact_user_id'];
-            $season_profile->biography = $season_holding['biography'];
-        }
-        else{
-            return 0;         
-        }
-        return $season_profile;
-    }
-    
     function doUpdateSeasonProfile($user_id, $season_id, $cell, $gender, $shirt, $bio, $addr1, $addr2, $city, $state, $zip){
         $sql1 = "UPDATE ".TABLE_PROFILE." "
                 . "SET cell_phone = ". db_input($cell).", gender = ". db_input($gender).", shirt_size = ". db_input($shirt).", "
                 . "biography = ". db_input($bio).", address_1 = ". db_input($addr1).", address_2 = ". db_input($addr2).", "
-                . "address_city = ". db_input($city).", address_state = ". db_input($state).", address_zip = ". db_input($zip)." "
+                . "address_city = ". db_input($city).", address_state = ". db_input($state).", address_zip = '". db_input($zip)."' " //we put single quotes around zip so it will save leading 0
                 . "WHERE user_id = ". db_input($user_id)." "
                 . "AND season_id = ". db_input($season_id).";";
                 return db_query($sql1);
