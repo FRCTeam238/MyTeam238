@@ -43,6 +43,7 @@ else if($_POST && isset($_POST['manualcontact'])){
 }
 
 $current_emer_contact = $Data->getEmergencyContact($_SESSION['_user']['id'], $_SESSION['current_season_id']);
+if(empty($current_emer_contact)){$current_emer_contact[0] = "Not";$current_emer_contact[1] = "Selected";}
 
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Emergency Contact');
@@ -56,7 +57,7 @@ contact is already affiliated with us, you can simply search for, and select, th
     <div class="col-md-4">
         <div class="panel panel-success">
             <div class="panel-heading">
-              <h3 class="panel-title">Current Emer. Contact</h3>
+              <h3 class="panel-title">Current Contact</h3>
             </div>
             <div class="panel-body">
                 Your current emergency contact is:<br /><b>
@@ -69,9 +70,10 @@ contact is already affiliated with us, you can simply search for, and select, th
     <div class="col-md-8">
         <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Add Emer. Contact</h3>
+              <h3 class="panel-title">Add Emergency Contact</h3>
             </div>
             <div class="panel-body">
+                <?php if(!$show_user_selected): ?>
                 <form action="<?php echo strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))); ?>" method="POST" id="usersearch" name="usersearch">
                    <div class="form-group has-feedback">
                        <b>Search for User (Email or Last Name)</b><br /><em>To begin (or restart) a search, simply enter new terms and select &quot;Search&quot;</em>
@@ -81,7 +83,8 @@ contact is already affiliated with us, you can simply search for, and select, th
                     <button type="submit" class="btn btn-primary center-block" name="usersearch">Search</button>
                   <br />
                 </form>
-                <?php if($show_search_results): ?>
+                <?php endif; 
+                if($show_search_results): ?>
                     <em>Based on your search, indicate the matching user by pressing the matching &quot;Select&quot; button.</em>
                     <table class="table">
                         <tr>
@@ -106,7 +109,11 @@ contact is already affiliated with us, you can simply search for, and select, th
                             echo 'Is your contact missing and/or not registered with '.SITE_SHORTNAME.'? You can manually add them instead. Only manually add a contact if you\'re sure they don\'t have an account!</td></tr>';
                         ?>
                     </table>
+                    <?php endif; 
+                    if(!$show_user_selected): ?>
                     <hr />
+                    <div class="alert alert-warning" role="alert">We strongly prefer that you use the above search to link to your emergency contact. However, if 
+                    your preferred emergency contact is not registered with <?php echo SITE_SHORTNAME ?>, you can instead add them using the fields below.</div>
                     <b>Manually Add Contact</b>
                     <form action="<?php echo strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))); ?>" method="POST" id="manualcontact" name="manualcontact">
                         <div class="form-group has-feedback">
@@ -138,18 +145,20 @@ contact is already affiliated with us, you can simply search for, and select, th
                          <button type="submit" class="btn btn-primary center-block" name="manualcontact">Add Manually</button>
                        <br />
                     </form>
-                <?php endif;                 
+                <?php endif; 
                 if($show_user_selected): ?>
                 <hr />
-                <em>Please review the selected contact and make sure this is the person you wish to make your Emergency Contact.</em>
+                <span style="color:red;font-style:italic;">Please review the selected contact and make sure this is the person you wish to make your Emergency Contact.</span>
                 <form action="<?php echo strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))); ?>" method="POST" id="addemercontact" name="addemercontact">
                    <div class="form-group has-feedback">
                         <label class="control-label" for="contactname">Contact Name</label>
                         <input type="text" name="contactname" class="form-control" id="relationto" value="<?php echo $_POST['usersname'] . ' (From Search)' ?>" disabled autocomplete="off">                
                         <input type="hidden" name="contact_id" value="<?php echo $_POST['userid']; ?>" />
                     </div>
-                    <button type="submit" class="btn btn-primary center-block" name="addemercontact">Confirm - Make Contact</button>
+                    <button type="submit" class="btn btn-success center-block" name="addemercontact">Confirm - Confirm Contact</button>
                   <br />
+                  <a href="<?php echo strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))); ?>" class="btn btn-primary center-block" style="max-width:150px;">Cancel - Restart</a>
+                  <br/>
                 </form>
                 <?php endif; ?>
             </div>
@@ -158,6 +167,11 @@ contact is already affiliated with us, you can simply search for, and select, th
 </div>
 <script>
 $(document).ready(function () {
+    jQuery.validator.addMethod('phoneUS', function(phone_number, element) {
+        phone_number = phone_number.replace(/\s+/g, ''); 
+        return this.optional(element) || phone_number.length > 9 &&
+            phone_number.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/);
+    }, 'Please enter a valid phone number.');
     $('#addemercontact').validate({
         submitHandler: function(form) {
             if(confirm("Are you sure you would like to make this your emergency contact?")){
@@ -185,8 +199,8 @@ $(document).ready(function () {
     $('#manualcontact').validate({
         rules: {
             cellphone: {
-                required: true,
-                phoneUS: true
+                phoneUS: true,
+                required: true
             },
             fname: {
                 required: true,
