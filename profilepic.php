@@ -45,24 +45,28 @@ if($_POST){//incoming new photo attempt
         if($check === false) {
             $_SESSION['statusCode'] =  1029;
             $Data->doLog(1029, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Upload Prof Pic. Not an image.');
+            goto endofprocess;
         }
     }
     // Check file size
     if ($_FILES["profpic"]["size"] > 100000) {
         $_SESSION['statusCode'] =  1029;
         $Data->doLog(1029, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Upload Prof Pic. Too big.');
+        goto endofprocess;
     }
     // Allow certain file formats
     if($imageFileType != "jpg" && $imageFileType != "png") {
         $_SESSION['statusCode'] =  1029;
         $Data->doLog(1029, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Upload Prof Pic. Wrong file type.');
+        goto endofprocess;
     }
     if (!move_uploaded_file($_FILES["profpic"]["tmp_name"], $target_file)) {
         $_SESSION['statusCode'] =  1029;
         $Data->doLog(1029, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Upload Prof Pic. Unknown error.');
+        goto endofprocess;
     }
     
-    //At this point we have the file uploaded as the user ID.extension, for manipulation
+    //At this point we have the file uploaded as the user ID. extension, for manipulation
     $gen = md5(rand());
     $img_key = substr($gen,strlen($gen) - 10,10);
     $target_file_final = $target_dir . $img_key . ".jpg";//always ends as jpg
@@ -93,7 +97,8 @@ if($_POST){//incoming new photo attempt
     else{
         $_SESSION['statusCode'] =  1025;
         $Data->doLog(1025, $_SESSION['_user']['id'], $_SERVER['REQUEST_URI'], 'FAILED to Update Profile Pic');
-    }    
+    }
+    endofprocess:    
 }
 
 $BuildPage = new BuildPage();
