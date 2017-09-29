@@ -26,6 +26,7 @@ if($_POST){//incoming profile info attempt
     }    
 }
 
+$editMode = false;
 $season_profile = $Data->getCurrentSeasonProfile($_SESSION['_user']['id'], $_SESSION['current_season_id']);
 if($season_profile->isProfileComplete()){
     $editMode = true;

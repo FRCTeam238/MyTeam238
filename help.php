@@ -22,6 +22,7 @@ $referrer = $_SERVER['HTTP_REFERER'];
   $referrer = "This page was accessed directly";
   }
 echo "<b>Visitor IP address:</b><br/>" . $ip . "<br/>";
+echo "<b>Visitor Legal Name:</b><br/>" . $_SESSION['_user']['firstname'] . " (" . $_SESSION['_user']['preferredfirstname'] . ") " . $_SESSION['_user']['lastname'] . "<br/>";
 echo "<b>Browser (User Agent) Info:</b><br/>" . $browser . "<br/>";
 echo "<b>Referrer:</b><br/>" . $referrer . "<br/>";
 ?>

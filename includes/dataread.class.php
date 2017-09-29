@@ -142,7 +142,7 @@ class DataRead {
     }
         
     function getCurrentSeasonProfile($user_id, $season_id){
-        require(CLASSES_DIR.'season_profile.php');
+        require_once(CLASSES_DIR.'season_profile.php');
         $season_profile = new season_profile();        
         $sql1 = "SELECT UP.* FROM ".TABLE_PROFILE." UP "
                 . "WHERE UP.season_id = ".db_input($season_id)." "

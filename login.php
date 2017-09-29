@@ -63,11 +63,12 @@ if($_POST){//incoming login or account create attempt
                     $_SESSION['_user']['id'] = $login_result->account_id;
                     $_SESSION['_user']['email'] = $login_result->email_address;
                     if(!empty($login_result->preferred_first_name)){ //use preferred name if they have one
-                        $_SESSION['_user']['firstname'] = $login_result->preferred_first_name;
+                        $_SESSION['_user']['preferredfirstname'] = $login_result->preferred_first_name;
                     }
                     else{
-                        $_SESSION['_user']['firstname'] = $login_result->first_name;    
-                    }                
+                        $_SESSION['_user']['preferredfirstname'] = $login_result->first_name;
+                    }
+                    $_SESSION['_user']['firstname'] = $login_result->first_name;
                     $_SESSION['_user']['lastname'] = $login_result->last_name;
                     $_SESSION['reg_type'] = $login_result->registrant_type;//not under user array!
                     $_SESSION['_user']['detail_complete'] = $login_result->profileComplete ? 1 : 0;
