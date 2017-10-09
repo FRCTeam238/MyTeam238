@@ -190,7 +190,7 @@ INSERT INTO `status_codes` (`id`, `isError`, `message`) VALUES
 (1006, 1, 'Something went wrong when attempting to activate your account. Please contact support.'),
 (1007, 1, 'Unable to log in. Please verify your email and password before trying again.'),
 (1008, 1, 'You cannot log in until your email has been verified. Please click the enclosed link.'),
-(1009, 1, 'Your account has not yet been approved, and therefore cannot be accessed. For security purposes, each account must be approved before it can be used.'),
+(1009, 1, 'Your account has not yet been approved (a step that must be completed by a Team Coach), and therefore cannot be accessed. For security purposes, each account must be approved before it can be used.'),
 (1010, 1, 'Your password must be changed, either due to an account change you\'ve made or the request of an administrator.'),
 (1011, 0, 'You\'ve been logged out. See you next time!'),
 (1012, 1, 'Unable to reset password, the specified email address could not be found or there was an error when initiating the reset.'),

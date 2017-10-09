@@ -22,7 +22,7 @@ if($_POST){//incoming login or account create attempt
             $timeFirst  = strtotime($_SESSION['last_login_attempt']);
             $timeSecond = strtotime(Format::currentDateTime());
             $differenceInSeconds = $timeSecond - $timeFirst;
-            if($differenceInSeconds < 10){
+            if($differenceInSeconds < 5){
                 //User is trying too fast. Needs to wait between attempts.
                 $_SESSION['statusCode'] =  1031;
                 $spamblock = true;
@@ -106,10 +106,10 @@ if($_POST){//incoming login or account create attempt
         elseif(!isset($_SESSION['login_locked_until'])){
             $_SESSION['login_failures']++;
         }
-        if($_SESSION['login_failures'] >= 4){
+        if($_SESSION['login_failures'] >= 5){
             //Stop them for a while
             $_SESSION['statusCode'] =  1032;
-            $_SESSION['login_locked_until'] = strtotime("+15 minutes", strtotime(Format::currentDateTime()));
+            $_SESSION['login_locked_until'] = strtotime("+10 minutes", strtotime(Format::currentDateTime()));
             unset($_SESSION['login_failures']);
         }
     }
@@ -179,6 +179,9 @@ elseif(isset($_GET['activate'])){//account activation
 $allowNewAccounts = $site_settings->allow_new_accounts;
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Login');
+if(isset($_SESSION['login_locked_until'])){
+    echo '<!--Locked Until: ' . $_SESSION['login_locked_until'] . '-->';
+}
 ?>
 Welcome to the <?php echo SITE_FULLNAME; ?> Registration and Membership site. Please login to your existing account or create a new one. If you were emailed a registration 
 invitation, please use the personalized link to create your account, as it will expedite the registration process.<br /><br />

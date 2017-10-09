@@ -22,9 +22,12 @@ class BuildPage {
     <link rel="apple-touch-icon" href="'.SITE_URL.'images/apple-touch-icon-72.png" />
     <link rel="apple-touch-icon" sizes="114x114" href="'.SITE_URL.'images/apple-touch-icon-114.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="'.SITE_URL.'images/apple-touch-icon-180.png" />	
-    <script>
-        // google analytics here
-    </script>
+    <script>' . "
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-92910315-2');
+    </script>" . '
 </head>
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

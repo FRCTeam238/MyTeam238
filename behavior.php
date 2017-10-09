@@ -84,9 +84,48 @@ By applying your digital signature below, you affirm that you have read this and
 that violations of this contract could result in your being dismissed from the team or being suspended from competition at Coach discretion.
 
 <?php elseif($_SESSION['reg_type'] == RegistrantTypes::Mentor): ?>
-    MENTOR CONTRACT TO BE PROVIDED
+    Every Mentor of <?php echo SITE_FULLNAME ?> has a duty and responsibility to represent himself/herself, the team and the school in the best manner possible. Because of the high 
+    visibility of all members in the community, when accepting a position on the team, every member must agree to abide by a higher standard of character, values and behavior 
+    than an average person. This applies to your behavior both in any team setting. You are expected to avoid situations where you might be accused of wrongdoing. Being in the 
+    &quot;wrong place at the wrong time&quot; is not an excuse if you chose to be there in the first place.
+    <br /><br />
+    When representing the team at any time, all mentors are expected to abide the following guidelines:
+    <ul>
+        <li>Conduct themselves with Gracious Professionalism at all times when representing the team.</li>
+        <li>Treat all students equally, with no bias.</li>
+        <li>Use appropriate language (no swearing) in the presence of students.</li>
+    </ul>
+    <br />
+    Any act in which the mentor staff or administration believes a mentor’s conduct is detrimental to the team will result in a warning and potential suspension/dismissal from 
+    the team. This includes but is not limited to:
+    <ul>
+        <li>Harassment (verbal/physical/sexual/etc...) of a team member (student, mentor or parent), including via social media (cellular devices, Facebook, Twitter, etc...)</li>         
+    </ul>
+    <br />
+    By accepting below, you affirm that you have read this and fully understand the rules set forth on this Contract. You are also stating that you understand that violations 
+    of this contract could result in your being dismissed from the team or being suspended from competition.
+
 <?php elseif($_SESSION['reg_type'] == RegistrantTypes::Parent): ?>
-    PARENT CONTRACT TO BE PROVIDED
+    Every Parent Group member of <?php echo SITE_FULLNAME ?> has a duty and responsibility to represent himself/herself, the team and the school in the best manner possible. Because of the 
+    high visibility of all members in the community, when accepting a position on the team, every member must agree to abide by a higher standard of character, values and behavior 
+    than an average person. This applies to your behavior both in any team setting. You are expected to avoid situations where you might be accused of wrongdoing. Being in the 
+    &quot;wrong place at the wrong time&quot; is not an excuse if you chose to be there in the first place.<br /><br />
+    When representing the team at any time, all Parent Group (PG) members are expected to abide the following guidelines:
+    <ul>
+        <li>Conduct themselves with Gracious Professionalism at all times when representing the team.</li>
+        <li>Treat all students equally, with no bias towards their own child.</li>
+        <li>Use appropriate language (no swearing) in the presence of students.</li>
+    </ul>
+    <br />
+    Any act in which the coaching staff or administration believes a PG member's conduct is detrimental to the team will result in a warning and potential suspension/dismissal 
+    from the team. This includes but is not limited to: 
+    <ul>
+        <li>Harassment (verbal/physical/sexual/etc...) of a team member (student, mentor or parent), including via social media (cellular devices, Facebook, Twitter, etc...)</li>
+        <li>Undermining mentor decisions regarding the team.</li>
+    </ul>
+    <br />
+    By accepting below, you affirm that you have read this and fully understand the rules set forth on this Contract. You are also stating that you understand that violations of 
+    this contract could result in your being dismissed from the team or being suspended from competition.
 <?php endif; ?>
 <br /><br />
 <?php if(!$readonly): ?>
