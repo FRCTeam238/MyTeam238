@@ -114,7 +114,7 @@ if($_POST){//incoming login or account create attempt
         }
     }
     elseif(isset($_POST['accountcreate'])){
-        if($site_settings->new_accounts_access_code != NULL){//system is requiring codes
+        if(($site_settings->new_accounts_access_code != NULL) && isset($_POST['accesscode']) && (strlen(trim($_POST['accesscode'])) > 0)){//system is allowing access codes
             if(!isset($_POST['accesscode']) || strtoupper($_POST['accesscode']) != strtoupper($site_settings->new_accounts_access_code)){
                 $_SESSION['statusCode'] =  1036;
                 $skip_processing = true;
@@ -233,8 +233,10 @@ invitation, please use the personalized link to create your account, as it will 
                 </div>
                 <?php if($site_settings->new_accounts_access_code): ?>
                 <div class="form-group has-feedback">
-                    <label class="control-label" for="accesscode">Access Code</label>
-                    <input type="text" name="accesscode" class="form-control" id="accesscode" autocomplete="off">                
+                    <label class="control-label" for="accesscode">Access Code</label><br />
+                    <em>Current system configuration allows the use of Access Codes for expedited registration. If you do not 
+                        have an access code, simply leave this box blank to proceed with registration.</em>
+                    <input type="text" name="accesscode" class="form-control" id="accesscode" autocomplete="off" placeholder="Optional">                
                 </div>
                 <?php endif; ?>
             </div>  
@@ -302,16 +304,12 @@ $(document).ready(function () {
             password_create2: {
                 required: true,
                 equalTo: "#password_create"
-            },
-            accesscode: {
-                required: true
             }
         },
         messages:{
             email: "An email address is required to create an account",
             password_create: "Please enter a password",
-            password_create2: "The passwords you entered do not match",
-            accesscode: "Current system configuration requires an access code to continue"
+            password_create2: "The passwords you entered do not match"
         },
         highlight: function (element) {
             $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
