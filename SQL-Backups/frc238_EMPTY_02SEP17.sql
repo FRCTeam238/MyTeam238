@@ -217,7 +217,7 @@ INSERT INTO `status_codes` (`id`, `isError`, `message`) VALUES
 (1033, 0, 'Requested relationship has been added, but requires verification by the other party before it will be confirmed.'),
 (1034, 1, 'Requested relationship already existed, and cannot be added again.'),
 (1035, 0, 'Relationship has been updated.'),
-(1036, 1, 'An access code is required at this time, and was either incorrect or missing.');
+(1036, 1, 'An access code was entered, but was incorrect.');
 
 -- --------------------------------------------------------
 
