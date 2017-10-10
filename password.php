@@ -137,7 +137,7 @@ associated with your account, please contact us for assistance.<br /><br />
                 <input type="hidden" name="key" value="usepasswordinstead">
             </div>
             <?php
-                elseif($update_requirecurrentpassword):
+                else:
             ?>
             Your request has been accepted. To update your password, please select a new one below.<br /><br />
             <div class="form-group has-feedback">

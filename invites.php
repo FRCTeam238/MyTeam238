@@ -69,7 +69,7 @@ for the referral, visible below.<br /><br />
     <div class="col-md-6 col-md-push-3">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <h3 class="panel-title">Your Referrals <span class="badge"><?php echo count($referrals) ?></span></h3>
+                <h3 class="panel-title">Your Referrals <span class="badge"><?php if(isset($referrals)){echo count($referrals);}else{echo 0;} ?></span></h3>
             </div>
             <div class="panel-body">
                 <?php

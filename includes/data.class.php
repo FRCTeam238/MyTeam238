@@ -52,6 +52,7 @@ class Data extends DataRead {
     
     function doCreateAccount($email, $password, $emailKey, $access_code_used){
         //User creating a new account
+        if(!isset($access_code_used) || $access_code_used == NULL){$access_code_used = 0;}
         $now = Format::currentDateTime();
         $sql1 = "SELECT * FROM ".TABLE_USERS." U WHERE U.email = ".db_input($email)."";
         if(db_num_rows(db_query($sql1))){//email in use
