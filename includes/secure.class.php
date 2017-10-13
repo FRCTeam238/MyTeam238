@@ -125,22 +125,21 @@ class Secure {
         }
      }
 	
-        /*
-	function requireStaffLogin(){
-
-		if($this->requireLogin()){
-			if(!isset($_SESSION['_staff'])){ //user not staffn, send them to home
-				$_SESSION['statusCode'] = 108;
-				session_write_close();
-		   		header("Location: ".SITE_URL."index.php");
-	   		}
-		}
-	   	else
-		{
-			return 0;
-		}
-	}
-	
+    function requireAdminLogin(){
+        if($this->requireLogin()){
+            if(!isset($_SESSION['_admin'])){ //user not staff, send them to home
+                $_SESSION['statusCode'] = 1038;
+                session_write_close();
+                header("Location: ../index");
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+        
+    /*
 	function checkStaffToken($token){
 
 		if(!$_SESSION['_staff'][$token]){//doesnt have the token they need

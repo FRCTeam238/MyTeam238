@@ -84,6 +84,7 @@
     require(INCLUDE_DIR.'secure.class.php');
     require(INCLUDE_DIR.'dataread.class.php');
     require(INCLUDE_DIR.'data.class.php');    
+    require(INCLUDE_DIR.'dataadmin.class.php');
     require(INCLUDE_DIR.'mysqli.php');
 
     #CURRENT EXECUTING SCRIPT.
@@ -108,7 +109,9 @@
     define('TABLE_PROFILE',TABLE_PREFIX.'user_profile');
     define('TABLE_PROFILE_STUDENT',TABLE_PREFIX.'user_profile_student_specific');
     define('TABLE_PROFILE_MENTORPARENT',TABLE_PREFIX.'user_profile_mentorparent_specific');
-    define('TABLE_PROFILE_ALUMNI',TABLE_PREFIX.'user_profile_alumni_specific');    
+    define('TABLE_PROFILE_ALUMNI',TABLE_PREFIX.'user_profile_alumni_specific');
+    
+    define('TABLE_ADMIN_ROLES',TABLE_PREFIX.'admin_roles');
 
     #Connect to the DB
     if(!db_connect(DBHOST,DBUSER,DBPASS,DBNAME)){

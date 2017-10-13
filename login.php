@@ -84,7 +84,15 @@ if($_POST){//incoming login or account create attempt
                         $_SESSION['season_signed_behavior'] = $profile->behavior_contract;
                         $_SESSION['season_profile_complete'] = $profile->season_profile_complete;
                     }
+                    
+                    //CHECK FOR ADMIN PERMISSIONS AND LOAD THEM UP, IF APPLICABLE
+                    $DataAdmin = new DataAdmin();
+                    $admin_login = $DataAdmin->doAdminLogin($login_result->account_id);
+                    if($admin_login->is_admin){
+                        $_SESSION['_admin']['is_admin'] = 1;//can see admin basic info
+                    }
 
+                    //READY FOR SESSION and LOGIN
                     $Security->startNewSession();
                     unset($_SESSION['last_login_attempt']);//delete the tracking of time, since they were successful
                     unset($_SESSION['login_failures']);

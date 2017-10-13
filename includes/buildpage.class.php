@@ -68,11 +68,15 @@ class BuildPage {
                     <div class="navbar-brand">
                         <strong>'.SITE_SHORTNAME.'</strong>
                     </div>
-                </a>
-            </div>
+                </a>';
+  $html .= '</div>
             <div id="navbar-collapse" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="'.SITE_URL.'" title="Home"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>&nbsp;&nbsp;Home</a></li>';
+            if(isset($_SESSION['_admin'])){
+                $html .= '
+                    <li><a href="'.SITE_URL.'admin/" title="Admin"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Admin</a></li>';
+            }
             if(TESTMODE){//in test mode, make a big menu of pages for dev use
                 $html .= 
                     '<li class="dropdown hidden-xs" style="background-color:red;">
@@ -88,6 +92,14 @@ class BuildPage {
                             <li><a href="'.SITE_URL.'profile">Season Profile</a></li>
                             <li><a href="'.SITE_URL.'relationships">Relationships</a></li>
                             <li><a href="'.SITE_URL.'emergency">Emergency Contacts</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown hidden-xs" style="background-color:red;">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> TEST ADMIN<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="'.SITE_URL.'admin/">AdminHome</a></li>
                         </ul>
                     </li>';
             }
@@ -137,8 +149,12 @@ class BuildPage {
                             <img src="'.Data::doGetUserProfilePicPath($_SESSION['_user']['id']).'" class="img-rounded" alt="Profile Picture" style="margin-top:-8px;" height="26" width="26">
                             '.strtoupper($users_fullname).'
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="'.SITE_URL.'email"><span class="glyphicon glyphicon-envelope" aria-hidden="true" style="color:purple;"></span> Change My Email Address</a></li>
+                        <ul class="dropdown-menu">';
+                    if(isset($_SESSION['_admin'])){
+                          $html .= '<li><a href="'.SITE_URL.'admin/"><span class="glyphicon glyphicon-wrench" aria-hidden="true" style="color:limegreen;"></span> Welcome, Admin!</a></li>                            
+                                    <li role="separator" class="divider"></li>';
+                    }
+                  $html .= '<li><a href="'.SITE_URL.'email"><span class="glyphicon glyphicon-envelope" aria-hidden="true" style="color:purple;"></span> Change My Email Address</a></li>
                             <li><a href="'.SITE_URL.'profilepic"><span class="glyphicon glyphicon-user" aria-hidden="true" style="color:purple;"></span> Change My Profile Pic</a></li>
                             <li><a href="'.SITE_URL.'password"><span class="glyphicon glyphicon-asterisk" aria-hidden="true" style="color:purple;"></span> Change My Password</a></li>                            
                             <li role="separator" class="divider"></li>
