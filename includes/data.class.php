@@ -216,7 +216,9 @@ class Data extends DataRead {
         }
         else{
             $pass_use = Secure::makePassword($newPassword);
-            $sql2 = "UPDATE ".TABLE_USERDETAILS." UD, ".TABLE_USERS." U "
+            $sql2 = "UPDATE ".TABLE_USERDETAILS." UD "
+                    . "INNER JOIN ".TABLE_USERS." U "
+                    . "ON UD.user_id = U.id "
                     . "SET U.password = ". db_input($pass_use).", "
                     . "UD.pwResetKey = NULL, "
                     . "UD.pwResetExpiration = NULL "
