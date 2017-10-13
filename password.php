@@ -46,7 +46,7 @@ if($_POST){//incoming email address to reset or update password request
            if($updateresult){
                 $_SESSION['statusCode'] =  1014;
                 session_write_close();
-                header("Location: logout");//logout so they can use the new password
+                header("Location: logout?silent");//logout so they can use the new password
             }
             else{
                 $_SESSION['statusCode'] =  1023;
@@ -69,6 +69,10 @@ if($_POST){//incoming email address to reset or update password request
 }
 elseif(isset($_GET['reset'])){//reset email link clicked
     if(isset($_GET['email']) && isset($_GET['key'])){
+        //reset lockout vars, since they did a reset
+        unset($_SESSION['login_failures']);
+        unset($_SESSION['login_locked_until']);
+        //proceed
         $showupdateform = true;
     }
     else{

@@ -28,6 +28,17 @@ class Data extends DataRead {
         return db_query($sql1);
     }
     
+    function doGetEncryptedUserPass($user_id, $email = NULL){
+        if($user_id != NULL && $user_id > 0){
+            $sql1 = "SELECT U.password FROM ".TABLE_USERS." U WHERE U.id = ".db_input($user_id).";";
+        }
+        else{ //use email
+            $sql1 = "SELECT U.password FROM ".TABLE_USERS." U WHERE U.email = ".db_input($email).";";
+        }
+        $query1 = db_fetch_row(db_query($sql1));
+        return $query1[0];
+    }
+    
     static function doGetUserProfilePicPath($user_id){
         $prof_pic_path = SITE_URL.'images/profile/';
         $sql1 = "SELECT UD.profile_pic_key FROM ".TABLE_USERDETAILS." UD "
@@ -51,6 +62,7 @@ class Data extends DataRead {
     }
     
     function doCreateAccount($email, $password, $emailKey, $access_code_used){
+        $pass_use = Secure::makePassword($password);
         //User creating a new account
         if(!isset($access_code_used) || $access_code_used == NULL){$access_code_used = 0;}
         $now = Format::currentDateTime();
@@ -61,7 +73,7 @@ class Data extends DataRead {
         }
         $sql2 = "START TRANSACTION;";
         $result2 = db_query($sql2);
-        $sql3 = "INSERT INTO `".TABLE_USERS."`(email, password) VALUES (".db_input($email).", ".db_input($password).");";
+        $sql3 = "INSERT INTO `".TABLE_USERS."`(email, password) VALUES (".db_input($email).", ".db_input($pass_use).");";
         $result3 = db_query($sql3);
         $sql4 = "SELECT LAST_INSERT_ID();";
         $result4 = db_query($sql4);
@@ -117,14 +129,14 @@ class Data extends DataRead {
     
     function doAccountLogin($season_id, $email, $password){
         require(CLASSES_DIR.'login_info.php');
-        $login_info = new login_info();        
+        $passMatch = Secure::checkPassword($password, $this->doGetEncryptedUserPass(NULL, $email));
+        $login_info = new login_info();
         $sql1 = "SELECT U.*, UD.* FROM ".TABLE_USERS." U "
                 . "JOIN ".TABLE_USERDETAILS." UD "
                 . "ON UD.user_id = U.id "
                 . "WHERE U.email = ".db_input($email)." "
-                . "AND U.password = ". db_input($password)." "
                 . "AND UD.is_deleted = 0;";
-        if(db_num_rows(db_query($sql1))){
+        if($passMatch && db_num_rows(db_query($sql1))){ //pass good, and user row exists
             //account exists
             $login_holding = db_fetch_array(db_query($sql1));
             $login_info->account_found_valid = 1;
@@ -203,8 +215,9 @@ class Data extends DataRead {
             return 0;
         }
         else{
+            $pass_use = Secure::makePassword($newPassword);
             $sql2 = "UPDATE ".TABLE_USERDETAILS." UD, ".TABLE_USERS." U "
-                    . "SET U.password = ". db_input($newPassword).", "
+                    . "SET U.password = ". db_input($pass_use).", "
                     . "UD.pwResetKey = NULL, "
                     . "UD.pwResetExpiration = NULL "
                     . "WHERE U.email = ". db_input($user_email);
@@ -214,16 +227,14 @@ class Data extends DataRead {
     
     function doUpdateUserPassword_ViaCurrent($user_id, $user_currentpassword, $user_newpassword){//print_r($_POST);exit;
         //should only do update if current password was correct
-        $sql1 = "SELECT * FROM ".TABLE_USERS." U "
-                . "WHERE U.id = ".$user_id." "
-                . "AND U.password = ". db_input($user_currentpassword).";";
-        if(!db_num_rows(db_query($sql1))){
+        if(!Secure::checkPassword($user_currentpassword, $this->doGetEncryptedUserPass($user_id))){
             //user not found, or password wrong
             return 0;
         }
         else{
+            $new_pass = Secure::makePassword($user_newpassword);
             $sql2 = "UPDATE ".TABLE_USERS." U "
-                    . "SET U.password = ". db_input($user_newpassword)." "
+                    . "SET U.password = ". db_input($new_pass)." "
                     . "WHERE U.id = ".$user_id.";";
             return db_query($sql2);
         }

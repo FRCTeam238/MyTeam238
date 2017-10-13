@@ -11,9 +11,11 @@ if($_SESSION['_user']['detail_complete']){//can't be here once profile is done
 
 if($_POST){//incoming update attempt
     $Data = new Data;
-    //Make sure they're 13yrs +
+    //Make sure they're 13yrs +    
+    $yearmustbeunder = date("Y") - 12;
+    $birthyear = substr($_POST['dob'], 0, 4);
     $age = date_diff(date_create($_POST['dob']), date_create('today'))->y;
-    if($age >= 13 && !empty($_POST['fname']) && !empty($_POST['lname'])){
+    if($birthyear < $yearmustbeunder && $age >= 13 && !empty($_POST['fname']) && !empty($_POST['lname'])){
         $result = $Data->doUpdateUserDetails($_SESSION['_user']['id'], Format::sanitizeName($_POST['fname']), Format::sanitizeName($_POST['lname']), $_POST['dob']);
         if($result){
             $_SESSION['statusCode'] =  1018;
