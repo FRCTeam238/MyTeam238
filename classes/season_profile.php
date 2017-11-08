@@ -18,6 +18,7 @@ class season_profile{
     public $emergency_contact_user_id = 0;
     public $biography = "";
     public $season_profile_complete = 0;
+    public $account_approved = 0;
     
     function isProfileComplete(){
         if(!empty($this->registration_type) && !empty($this->cell_phone) && !empty($this->address_1)){

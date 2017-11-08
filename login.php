@@ -47,11 +47,7 @@ if($_POST){//incoming login or account create attempt
                 //Check Email Verified
                 if(!$login_result->emailVerified){
                     $_SESSION['statusCode'] =  1008;
-                }            
-                //Check Account Approved
-                elseif(!$login_result->account_approved){
-                    $_SESSION['statusCode'] =  1009;
-                }            
+                }
                 //Check Force PW Required
                 elseif($login_result->forcePwChange){
                     $_SESSION['statusCode'] =  1010;
@@ -73,6 +69,10 @@ if($_POST){//incoming login or account create attempt
                     $_SESSION['reg_type'] = $login_result->registrant_type;//not under user array!
                     $_SESSION['_user']['detail_complete'] = $login_result->profileComplete ? 1 : 0;
                     $_SESSION['_user']['ip'] = $_SERVER['REMOTE_ADDR'];
+                    $_SESSION['_user']['approved_account'] = 0;
+                    if($login_result->account_approved){
+                        $_SESSION['_user']['approved_account'] = 1;
+                    }
 
                     //ADDITIONAL FIELDS THAT NEED TO BE DETERMINED ON LOGIN (default state)
                     $_SESSION['season_signed_behavior'] = 0;
@@ -319,8 +319,8 @@ $(document).ready(function () {
         },
         messages:{
             email: "An email address is required to create an account",
-            password_create: "Please enter a password",
-            password_create2: "The passwords you entered do not match"
+            password_create: "Please enter a password. It needs to be at least 8 characters.",
+            password_create2: "The passwords you entered do not seem to match."
         },
         highlight: function (element) {
             $(element).closest('.form-group').removeClass('has-success').addClass('has-error');

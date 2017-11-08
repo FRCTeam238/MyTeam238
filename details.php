@@ -68,7 +68,7 @@ You'll have the opportunity at a later time to specify additional information (s
         </div>
         <div class="form-group has-feedback">
             
-            <label class="control-label" for="dob">Legal Date of Birth</label><br />
+            <label class="control-label" for="dob">Legal Date of Birth (mm/dd/yyyy)</label><br />
             <input type="date" class="form-control" name="dob" placeholder="Date of Birth"><br />
             <div class="alert alert-warning" role="alert">We use this information to verify your age. Unless you are a student, your 
                 Date of Birth will not be visible to anyone on the <?php echo SITE_SHORTNAME ?> Registration System, or any Team Coaches/Administrators.

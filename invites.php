@@ -1,7 +1,7 @@
 <?php
 require_once 'main.inc.php';
 $Security = new Secure;
-$Security->requireLogin();//lock it down
+$Security->requireLogin(FALSE, FALSE, TRUE);//lock it down
 
 $Data = new Data;
 if($_POST){

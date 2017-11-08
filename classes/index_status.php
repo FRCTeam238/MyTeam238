@@ -7,6 +7,7 @@ class index_status {
     public $emergency_contact = 0;
     public $registrant_specific = 0;//the portion of the profile specific to the reg type
     public $percent_complete = 0;
+    public $account_approved = 0;
     
     function percentComplete($reg_type){
         require_once(CLASSES_DIR.'registrant_types.php');        

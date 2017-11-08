@@ -95,7 +95,7 @@ class Secure {
         $_SESSION['_user']['tokenExpire'] = time() + 180;
     }
     
-    function requireLogin($require_profile_details = TRUE, $require_joined_season = FALSE){
+    function requireLogin($require_profile_details = TRUE, $require_joined_season = FALSE, $require_approved_account = FALSE){
         if(!isset($_SESSION['_user'])){
             //user not logged in, send them to login.
             $_SESSION['statusCode'] = 0;
@@ -108,6 +108,11 @@ class Secure {
             session_write_close();
             header("Location: details");
         }
+        else if($require_approved_account && !$_SESSION['_user']['approved_account']){
+            $_SESSION['statusCode'] =  1009;
+            session_write_close();
+            header("Location: index");
+        }        
         else if($require_joined_season && !$_SESSION['reg_type'] > 0){
             $_SESSION['statusCode'] =  1030;
             session_write_close();

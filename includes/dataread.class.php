@@ -165,6 +165,13 @@ class DataRead {
             $season_profile->emergency_contact_id = $season_holding['emergency_contact_id'];
             $season_profile->emergency_contact_user_id = $season_holding['emergency_contact_user_id'];
             $season_profile->biography = $season_holding['biography'];
+            
+            $sql2 = "SELECT UD.account_approved FROM ".TABLE_USERDETAILS." UD "
+                . "WHERE UD.user_id = ". db_input($user_id).";";
+            if(db_num_rows(db_query($sql2))){
+                $season_holding2 = db_fetch_array(db_query($sql2));
+                $season_profile->account_approved = $season_holding2['account_approved'];
+            }
         }
         else{
             return 0;         
@@ -286,6 +293,7 @@ class DataRead {
             $returnValue->join_season = 1;
             $curr_profile = $this->getCurrentSeasonProfile($user_id, $season_id);
             $curr_profile->isProfileComplete();
+            $returnValue->account_approved = $curr_profile->account_approved;
             if($curr_profile->behavior_contract){
                 $returnValue->behavior_contract = 1;
             }

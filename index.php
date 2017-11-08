@@ -21,6 +21,15 @@ Your <?php echo SITE_SHORTNAME ?> account is the center of your digital relation
 account information in addition to some features and functionality that is available throughout the season. In addition to the options listed below, some user data and 
 configurations can be manipulated using the menu on the upper right, accessed by clicking on your name.
 <br /><br />
+
+<?php if(!$index_status->account_approved && $index_status->join_season): ?>
+<div class="alert alert-danger" role="alert">
+    <img src="<?php echo SITE_URL ?>images/warning.png" width="50" height="50" salt="announcement" /><b>Heads Up:</b>
+    You've completed as many steps as you can do without your account being processed.<br />A staff member will process these pending 
+    account soon, and then you'll be able to proceed.
+</div>
+<?php endif; ?>
+
 <div class="col-md-12">
     <div class="panel panel-primary">
         <div class="panel-heading">
@@ -64,7 +73,7 @@ configurations can be manipulated using the menu on the upper right, accessed by
                                 else{echo '<span class="glyphicon glyphicon-record" style="color:red;" aria-hidden="true"></span> To-Do';} ?></td>
                     <td>
                         <?php
-                        if(!$index_status->join_season){
+                        if(!$index_status->join_season || !$index_status->account_approved){
                             echo 'Not Available Yet';
                         }
                         else{
@@ -85,7 +94,7 @@ configurations can be manipulated using the menu on the upper right, accessed by
                                 else{echo '<span class="glyphicon glyphicon-record" style="color:red;" aria-hidden="true"></span> To-Do';} ?></td>
                     <td>
                         <?php
-                        if(!$index_status->join_season){
+                        if(!$index_status->join_season || !$index_status->account_approved){
                             echo 'Not Available Yet';
                         }
                         else{
@@ -106,7 +115,7 @@ configurations can be manipulated using the menu on the upper right, accessed by
                                 else{echo '<span class="glyphicon glyphicon-record" style="color:red;" aria-hidden="true"></span> To-Do';} ?></td>
                     <td>
                         <?php
-                        if(!$index_status->join_season){
+                        if(!$index_status->join_season || !$index_status->account_approved){
                             echo 'Not Available Yet';
                         }
                         else{
@@ -127,7 +136,7 @@ configurations can be manipulated using the menu on the upper right, accessed by
                                 else{echo '<span class="glyphicon glyphicon-record" style="color:red;" aria-hidden="true"></span> To-Do';} ?></td>
                     <td>
                         <?php
-                        if(!$index_status->join_season){
+                        if(!$index_status->join_season || !$index_status->account_approved){
                             echo 'Not Available Yet';
                         }
                         else{
@@ -184,11 +193,15 @@ configurations can be manipulated using the menu on the upper right, accessed by
                 <h3 class="panel-title">User Engagement</h3>
             </div>
             <div class="panel-body">
+                <?php if($index_status->account_approved): ?>
                 <a href="relationships" class="btn btn-default center-block" role="button">Manage Relationships</a>
                 <em>Link Your Child or Parent, required for some site activities</em>
                 <hr />
                 <a href="invites" class="btn btn-default center-block" role="button">Invite Friends to <?php echo SITE_SHORTNAME ?></a>
                 <em>Invite your friends to register and join the team, and collect referral credits</em>
+                <?php else: ?>
+                Not Available Yet
+                <?php endif; ?>
             </div>
         </div>
     </div>

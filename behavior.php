@@ -1,7 +1,7 @@
 <?php
 require_once 'main.inc.php';
 $Security = new Secure;
-$Security->requireLogin(TRUE, TRUE);//lock it down
+$Security->requireLogin(TRUE, TRUE, TRUE);//lock it down
 
 require_once CLASSES_DIR.'registrant_types.php';
 $Data = new Data;
