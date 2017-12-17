@@ -1,5 +1,6 @@
 <?php
 require_once '../main.inc.php';
+require_once CLASSES_DIR.'registrant_types.php';
 require_once CLASSES_DIR.'search_statuscode.php';
 $Security = new Secure;
 $Security->requireAdminLogin();//lock it down ADMIN
@@ -28,7 +29,8 @@ if(isset($actapproved) && $actapproved){
 if(count($pending) > 0){
     echo('<table class="table table-striped table-hover"><tr><th>Name</th><th>Email</th><th>Role Selected</th><th>Approve?</th></tr>');
     foreach ($pending as $pend){
-        echo('<tr><td style="vertical-align:middle;">'.$pend->first_name.' '.$pend->last_name.'</td><td style="vertical-align:middle;">'.$pend->email.'</td><td style="vertical-align:middle;">'.$pend->reg_type.'</td><td>');
+        echo('<tr><td style="vertical-align:middle;">'.$pend->first_name.' '.$pend->last_name.'</td><td style="vertical-align:middle;">'.$pend->email.'</td>');
+        echo('<td style="vertical-align:middle;">'.RegistrantTypes::toString($pend->reg_type).'</td><td>');
         echo('<form action="'.strtolower(ucfirst(pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME))).'" method="POST" id="approveact" name="approveact">');
         echo('<input type="hidden" name="userid" value="'.$pend->user_id.'"><button type="submit" class="btn btn-success">Approve</button></form>');
         echo('</td></tr>');
