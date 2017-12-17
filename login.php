@@ -90,6 +90,7 @@ if($_POST){//incoming login or account create attempt
                     $admin_login = $DataAdmin->doAdminLogin($login_result->account_id);
                     if($admin_login->is_admin){
                         $_SESSION['_admin']['is_admin'] = 1;//can see admin basic info
+                        $_SESSION['_admin']['can_approve_accounts'] = $admin_login->can_approve_accounts;
                     }
 
                     //READY FOR SESSION and LOGIN

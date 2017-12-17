@@ -23,16 +23,18 @@ submitted data, and assist other users.
         <td style="border-top:0px;">&nbsp;</td>
     </tr>
     <tr>
-        <td><a href="approveaccounts"><img src="../images/icons/approveaccounts.png" width="128" height="128" alt="accounts" border="0"></a></td>
+        <td>
+            <?php if($_SESSION['_admin']['can_approve_accounts'] == 1){echo('<a href="approveaccounts"><img src="../images/icons/approveaccounts.png" border="0" /></a>');}else{echo('<img src="../images/icons-inactive/approveaccounts.png" border="0" title="Restricted" />');} ?>
+        </td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
     </tr>
     <tr>
-        <td>Approve Accounts</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+        <td style="border-top:0px;">Approve Accounts</td>
+        <td style="border-top:0px;">&nbsp;</td>
+        <td style="border-top:0px;">&nbsp;</td>
+        <td style="border-top:0px;">&nbsp;</td>
     </tr>
 </table>
 

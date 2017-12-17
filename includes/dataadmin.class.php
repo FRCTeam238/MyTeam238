@@ -67,4 +67,40 @@ class DataAdmin extends Data {
         }
         return $return;
     }
+    
+    function getAccountsPendingApproval(){
+        require_once(CLASSES_DIR.'approve_accounts.php');
+        $return = null;
+        $sql0 = "SELECT S.id "
+                . "FROM ".TABLE_SEASONS." S "
+                . "WHERE S.is_active = 1";
+        $sid = db_fetch_row(db_query($sql0))[0];
+        $sql1 = "SELECT UD.first_name, UD.last_name, U.email, U.id, UP.registration_type "
+                . "FROM ".TABLE_USERDETAILS." UD "
+                . "JOIN ".TABLE_USERS." U on UD.user_id = U.id "
+                . "JOIN ".TABLE_PROFILE." UP on UP.user_id = U.id "
+                . "WHERE UD.account_approved = 0 "
+                . "AND UP.season_id = ".$sid.";";
+        if(db_num_rows(db_query($sql1))){
+            $return = array();
+            $query = db_query($sql1);
+            while($row = db_fetch_array($query)){
+                $newReturn = new approve_accounts();
+                $newReturn->user_id = $row['id'];
+                $newReturn->first_name = $row['first_name'];
+                $newReturn->last_name = $row['last_name'];
+                $newReturn->email = $row['email'];
+                $newReturn->reg_type = $row['registration_type'];
+                array_push($return, $newReturn);
+            }
+        }
+        return $return;
+    }
+    
+    function doApproveAccount($user_id){
+        $sql1 = "UPDATE ".TABLE_USERDETAILS." "
+                . "SET account_approved = 1 "
+                . "WHERE user_id = ". db_input($user_id).";";
+        return db_query($sql1);
+    }
 }
