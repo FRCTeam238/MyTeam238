@@ -23,6 +23,8 @@ class DataAdmin extends Data {
             $login_admin->account_id = $user_id;
             $login_admin->is_admin = 1;
             
+            $login_admin->can_approve_accounts = $admin_holding['can_approve_accounts'];
+            
             /*
             $login_info->account_found_valid = 1;
             $login_info->email_address = $login_holding['email'];
@@ -49,5 +51,20 @@ class DataAdmin extends Data {
             $login_admin->is_admin = 0;
         }
         return $login_admin;
+    }
+    
+    function searchStatusCode($search){
+        require_once(CLASSES_DIR.'search_statuscode.php');
+        $return = new search_statuscode();
+        $sql1 = "SELECT C.* "
+                . "FROM ".TABLE_CODES." C "
+                . "WHERE C.id = '".db_input($search)."';";
+        if(db_num_rows(db_query($sql1))){
+            $holding = db_fetch_array(db_query($sql1));
+            $return->code_id = $holding['id'];
+            $return->code_is_error = $holding['isError'];
+            $return->code_message = $holding['message'];
+        }
+        return $return;
     }
 }
