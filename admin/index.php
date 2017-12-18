@@ -24,15 +24,17 @@ submitted data, and assist other users.
     </tr>
     <tr>
         <td>
+            <?php if($_SESSION['_admin']['can_view_profiles'] == 1){echo('<a href="viewprofile"><img src="../images/icons/viewprofile.png" border="0" /></a>');}else{echo('<img src="../images/icons-inactive/viewprofile.png" border="0" title="Restricted" />');} ?>
+        </td>
+        <td>
             <?php if($_SESSION['_admin']['can_approve_accounts'] == 1){echo('<a href="approveaccounts"><img src="../images/icons/approveaccounts.png" border="0" /></a>');}else{echo('<img src="../images/icons-inactive/approveaccounts.png" border="0" title="Restricted" />');} ?>
         </td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td>&nbsp;</td>
     </tr>
     <tr>
+        <td style="border-top:0px;">View Profile</td>
         <td style="border-top:0px;">Approve Accounts</td>
-        <td style="border-top:0px;">&nbsp;</td>
         <td style="border-top:0px;">&nbsp;</td>
         <td style="border-top:0px;">&nbsp;</td>
     </tr>

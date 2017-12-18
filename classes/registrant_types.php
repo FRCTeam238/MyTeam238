@@ -9,5 +9,3 @@ abstract class RegistrantTypes extends BasicEnum
     const Mentor = 3;
     const Alumni = 4;
 }
-
-//$today = DaysOfWeek::Sunday;
