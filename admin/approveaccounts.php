@@ -3,7 +3,7 @@ require_once '../main.inc.php';
 require_once CLASSES_DIR.'registrant_types.php';
 require_once CLASSES_DIR.'search_statuscode.php';
 $Security = new Secure;
-$Security->requireAdminLogin();//lock it down ADMIN
+$Security->requireAdminLogin("can_approve_accounts");//lock it down ADMIN
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Admin Approve Accounts');
 

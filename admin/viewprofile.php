@@ -4,7 +4,7 @@ require_once CLASSES_DIR.'season_profile.php';
 require_once CLASSES_DIR.'login_info.php';
 require_once CLASSES_DIR.'registrant_types.php';
 $Security = new Secure;
-$Security->requireAdminLogin();//lock it down ADMIN
+$Security->requireAdminLogin("can_view_profiles");//lock it down ADMIN
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Admin View Season Profile');
 $Data = new DataAdmin();

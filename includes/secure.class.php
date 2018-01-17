@@ -130,12 +130,20 @@ class Secure {
         }
      }
 	
-    function requireAdminLogin(){
+    function requireAdminLogin($specific_permission_required = ""){//if spec'd, they must have this token to view page
         if($this->requireLogin()){
             if(!isset($_SESSION['_admin'])){ //user not staff, send them to home
                 $_SESSION['statusCode'] = 1038;
                 session_write_close();
                 header("Location: ../index");
+            }
+            else if(!empty($specific_permission_required))
+            {
+                if(!($_SESSION['_admin'][$specific_permission_required])){ //user is staff, but not with that token
+                    $_SESSION['statusCode'] = 1039;
+                    session_write_close();
+                    header("Location: ../index");
+                }
             }
         }
         else

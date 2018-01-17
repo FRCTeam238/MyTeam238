@@ -6,5 +6,6 @@ class login_admin{
     
     public $can_approve_accounts = 0;
     public $can_view_profiles = 0;
+    public $can_view_roster = 0;
     
 }

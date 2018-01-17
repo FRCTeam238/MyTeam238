@@ -92,6 +92,7 @@ if($_POST){//incoming login or account create attempt
                         $_SESSION['_admin']['is_admin'] = 1;//can see admin basic info
                         $_SESSION['_admin']['can_approve_accounts'] = $admin_login->can_approve_accounts;
                         $_SESSION['_admin']['can_view_profiles'] = $admin_login->can_view_profiles;
+                        $_SESSION['_admin']['can_view_roster'] = $admin_login->can_view_roster;
                     }
 
                     //READY FOR SESSION and LOGIN

@@ -25,6 +25,7 @@ class DataAdmin extends Data {
             
             $login_admin->can_approve_accounts = $admin_holding['can_approve_accounts'];
             $login_admin->can_view_profiles = $admin_holding['can_view_profiles'];
+            $login_admin->can_view_roster = $admin_holding['can_view_roster'];
             
         }
         else{
@@ -117,7 +118,7 @@ class DataAdmin extends Data {
                 . "JOIN ".TABLE_USERS." U on UD.user_id = U.id "
                 . "WHERE U.id = ".db_input($user_id).";";
         if(db_num_rows(db_query($sql1))){
-            $holding1 = db_fetch_array(db_query($sql1));//print_r($holding1);print_r('stuff:'.$holding1['id']);exit;
+            $holding1 = db_fetch_array(db_query($sql1));
             $return1 = new login_info();
             $return1->first_name = $holding1['first_name'];
             $return1->last_name = $holding1['last_name'];
@@ -150,6 +151,30 @@ class DataAdmin extends Data {
                 $return2->address_zip = $holding2['address_zip'];
             }
             array_push($return, $return2);            
+        return $return;
+    }
+    
+    function getSeasonRoster(){
+        require_once(CLASSES_DIR.'users_roster.php');
+        $return = array();
+        $sql1 = "SELECT u.id, ud.account_approved, ud.first_name, ud.last_name, up.preferred_first_name, up.registration_type "
+                . "FROM ".TABLE_USERS." u "
+                . "JOIN ".TABLE_USERDETAILS." ud ON u.id = ud.user_id "
+                . "LEFT JOIN ".TABLE_PROFILE." up ON up.user_id = u.id "
+                . "LEFT JOIN ".TABLE_SEASONS." s ON s.id = up.season_id AND s.is_active = 1 " 
+                . "WHERE ud.last_name IS NOT NULL "
+                . "ORDER BY up.registration_type DESC, ud.first_name DESC, u.id;";
+        $query = db_query($sql1);
+        while($row = db_fetch_array($query)){
+            $return1 = new users_roster();
+            $return1->user_id = $row['id'];
+            $return1->account_approved = $row['account_approved'];
+            $return1->first_name = $row['first_name'];
+            $return1->last_name = $row['last_name'];
+            $return1->preferred_first_name = $row['preferred_first_name'];
+            $return1->user_reg_type = $row['registration_type'];
+            array_push($return, $return1);
+        }        
         return $return;
     }
 }

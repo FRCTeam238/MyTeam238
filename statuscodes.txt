@@ -39,3 +39,4 @@ STATUS CODES
 1036 - access code was entered, but is incorrect
 1037 - not of age, or missing data to continue
 1038 - page is for staff only, access denied
+1039 - you are staff, but not with the right token for this page
