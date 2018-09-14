@@ -78,7 +78,7 @@ if($_POST){//incoming login or account create attempt
                     $_SESSION['season_signed_behavior'] = 0;
                     $_SESSION['season_profile_complete'] = 0;
 
-                    if($Data->userHasProfileInActiveSeason($currentseason->season_id, $_SESSION['_user']['id'])){
+                    if($Data->userHasProfileInTargetSeason($currentseason->season_id, $_SESSION['_user']['id'])){
                         $profile = $Data->getCurrentSeasonProfile($_SESSION['_user']['id'], $_SESSION['current_season_id']);
                         $profile->isProfileComplete();
                         $_SESSION['season_signed_behavior'] = $profile->behavior_contract;

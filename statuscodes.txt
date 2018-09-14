@@ -40,3 +40,4 @@ STATUS CODES
 1037 - not of age, or missing data to continue
 1038 - page is for staff only, access denied
 1039 - you are staff, but not with the right token for this page
+1040 - backfilled current season data from previous season profile

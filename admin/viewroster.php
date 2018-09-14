@@ -8,7 +8,7 @@ $Security->requireAdminLogin("can_view_roster");//lock it down ADMIN
 $BuildPage = new BuildPage();
 $BuildPage->printHeader('Admin View Season Roster');
 $Data = new DataAdmin();
-$allusers = $Data->getSeasonRoster();
+$allusers = $Data->getSeasonRoster($_SESSION['current_season_id']);
 ?>
 Review the full roster for the currently active season, including, where applicable,
 the role the user has applied to. This is a read-only copy of the data.<br /><br />

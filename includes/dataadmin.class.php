@@ -154,7 +154,7 @@ class DataAdmin extends Data {
         return $return;
     }
     
-    function getSeasonRoster(){
+    function getSeasonRoster($season_id){
         require_once(CLASSES_DIR.'users_roster.php');
         $return = array();
         $sql1 = "SELECT u.id, ud.account_approved, ud.first_name, ud.last_name, up.preferred_first_name, up.registration_type "
@@ -163,6 +163,7 @@ class DataAdmin extends Data {
                 . "LEFT JOIN ".TABLE_PROFILE." up ON up.user_id = u.id "
                 . "LEFT JOIN ".TABLE_SEASONS." s ON s.id = up.season_id AND s.is_active = 1 " 
                 . "WHERE ud.last_name IS NOT NULL "
+                . "AND up.season_id = ".db_input($season_id)." "
                 . "ORDER BY up.registration_type DESC, ud.first_name DESC, u.id;";
         $query = db_query($sql1);
         while($row = db_fetch_array($query)){

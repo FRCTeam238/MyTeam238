@@ -69,7 +69,7 @@ asked to complete additional profile information specific to your registration t
                 </div>
                 <div class="form-group has-feedback">
                     <label class="control-label" for="state2">State</label>
-                    <input type="text" name="state2" class="form-control" id="state2" value="NH" disabled="disabled">
+                    <input type="text" name="state2" class="form-control" id="state2" value="NH">
                     <input type="hidden" name="state" class="form-control" id="state"
                         <?php if($editMode){echo ' value="'.$season_profile->address_state.'"';} ?>
                     >
