@@ -139,7 +139,7 @@ class BuildPage {
             }
             else{
                 $users_fullname = "ACCOUNT";
-            }
+            }            
             $html .= '
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">

@@ -48,11 +48,15 @@ class Data extends DataRead {
                 . "AND UD.is_deleted = 0;";
         if (db_num_rows(db_query($sql1))) {
             $prof_pic_path_check = $prof_pic_path . db_fetch_row(db_query($sql1))[0] . '.jpg';
-            if (file_exists($prof_pic_path_check)) {
+            $prof_pic_path = $prof_pic_path_check;
+            /*
+            if (file_exists($prof_pic_path_check)) {echo("abc123");exit;
                 $prof_pic_path = $prof_pic_path_check;
             } else {
                 $prof_pic_path .= 'default.jpg';
             }
+             * */
+
         } else {
             $prof_pic_path .= 'default.jpg';
         }

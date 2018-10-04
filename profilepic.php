@@ -162,10 +162,12 @@ function readURL(input) {
                         .attr('src', e.target.result)
                         .width(200)
                         .height(200);
+                    $('#preview').show();
                     $('#preview2')
                         .attr('src', e.target.result)
                         .width(26)
                         .height(26);
+                    $('#preview2').show();
                 };
                 $('#preview_text').show();
                 $('#preview_text2').show();
@@ -174,6 +176,8 @@ function readURL(input) {
         }
 
 $(document).ready(function () {
+    $('#preview').hide();
+    $('#preview2').hide();
     $('#preview_text').hide();
     $('#preview_text2').hide();
     $('#profilepic').validate({
